@@ -1,249 +1,26 @@
 # go-zero-core
 
-`go-zero-core` 是一个面向 go-zero 项目的 Go 基础能力库，主要用于沉淀微服务项目中反复使用的通用组件。项目围绕 go-zero REST 服务、GORM、Redis、Kafka、RabbitMQ、JWT、日志和基础类型转换做轻量封装，目标是在业务项目中减少重复样板代码，并统一常见基础设施的接入方式。
+`go-zero-core` 是面向 go-zero 服务的 Go 基础能力库。它不替代 go-zero、GORM、go-redis、kafka-go 或 RabbitMQ 客户端，而是在这些库之上沉淀微服务项目中常见的初始化、连接管理、中间件、统一响应、日志、加密和类型转换能力。
 
-当前模块名为 `go-zero-core`，Go 版本要求为 `1.25+`。
+当前模块名为 `go-zero-core`，要求 Go `1.25+`。
 
-## 版本适配
+## 适用范围
 
-| go-zero-core 版本 | go-zero 版本 |
-| --- | --- |
-| v1.0 系列 | v1.10.1 |
+适合使用本库的场景：
 
-## 项目定位
+- 多个 go-zero REST 服务需要统一鉴权、CORS、限流、客户端 IP 提取和响应结构。
+- 服务需要以一致方式接入 MySQL、PostgreSQL、Redis、Kafka、RabbitMQ。
+- 项目需要复用 GORM 日志适配、trace 上下文、结构化日志输出。
+- 业务代码中存在大量类型转换、JSON 序列化、时间戳转换、指针取值等重复逻辑。
+- 服务需要 JWT、BCrypt、AES、RSA、HMAC、MD5、SHA、UUID、随机值等常用工具。
+- 需要 WebSocket 会话管理、连接复用、广播和重连能力，并在业务端按需扩展鉴权、分组、跨实例广播等能力。
+- 需要基于 cron 的任务注册、调度和生命周期管理，并在业务端按需扩展持久化、失败重试、分布式调度等能力。
 
-这个仓库更适合作为业务服务的内部基础库使用，而不是完整的应用框架。它不接管 go-zero 的工程结构，也不替代 go-zero、GORM、go-redis、kafka-go 或 RabbitMQ 客户端本身，而是在这些库之上提供更贴近业务项目的初始化、配置、封装和辅助函数。
+## 版本兼容
 
-适用场景：
-
-- go-zero REST 服务需要统一鉴权、CORS、限流、IP 提取等中间件。
-- 多个服务需要复用 MySQL、PostgreSQL、Redis、Kafka、RabbitMQ 的连接管理方式。
-- 项目中需要统一日志内容格式、trace 上下文和 GORM 日志输出。
-- 业务代码中频繁出现类型转换、JSON 序列化、时间转换、指针取值等基础操作。
-- 需要常用加密、签名、摘要、JWT、UUID、随机字符串等工具函数。
-
-## 目录结构
-
-```text
-.
-├── xcast/                   # 类型转换和序列化辅助工具
-├── xdata/                   # 数据库、缓存和消息队列封装
-│   ├── xkafka/              # Kafka 生产者、消费者和客户端管理
-│   ├── xmysql/              # MySQL GORM 连接、全局实例和分表支持
-│   ├── xpostgres/           # PostgreSQL GORM 连接、全局实例和分表支持
-│   ├── xrabbitmq/           # RabbitMQ 连接、声明、生产者、消费者和客户端管理
-│   └── xredis/              # Redis 连接、全局客户端和分布式锁
-├── xcrypto/                 # 加密、摘要、编码、JWT、UUID 和随机值工具
-│   ├── xaes/                # AES-GCM、AES-CBC 加解密
-│   ├── xbase64/             # Base64、Base64URL、Base62、Base58 编解码
-│   ├── xbcrypt/             # BCrypt 密码哈希和校验
-│   ├── xhmac/               # HMAC-SHA 签名和校验
-│   ├── xjwt/                # JWT 生成、解析和刷新
-│   ├── xmd5/                # MD5 字符串、字节和文件摘要
-│   ├── xrand/               # 随机字节、十六进制、数字和字符串
-│   ├── xrsa/                # RSA 密钥、OAEP 加解密和 PSS 签名
-│   ├── xsha/                # SHA1、SHA256、SHA384、SHA512 摘要
-│   └── xuuid/               # UUID 生成、解析和校验
-├── xlog/                    # go-zero logx 配置、结构化日志和 GORM 日志适配
-├── xmid/                    # go-zero REST 中间件
-├── xreply/                  # 统一 API 响应结构和响应辅助能力
-├── xtask/                   # 定时任务管理
-├── xws/                     # WebSocket 会话和连接管理
-├── go.mod                   # Go 模块定义
-├── go.sum                   # 依赖版本锁定
-├── LICENSE                  # 许可证
-└── README.md                # 项目说明文档
-```
-
-## 功能介绍
-
-### xcast
-
-`xcast` 包提供基础类型转换，适合替代业务代码中分散的 `strconv`、`json.Marshal`、`time.Format` 等重复逻辑。
-
-主要能力：
-
-- 字符串转整数、无符号整数、浮点数、布尔值和时间。
-- 整数、无符号整数、浮点数、布尔值转字符串。
-- `any` 类型转字符串、整数、`int64`、`float64`、布尔值，并提供默认值版本。
-- `time.Time` 和 Unix 秒、毫秒时间戳互转。
-- 标准 JSON 和格式化 JSON 序列化、反序列化。
-- struct 和 map 之间转换。
-- 泛型指针工具：创建指针、取指针值、取默认值。
-
-### xdata/xmysql
-
-`xdata/xmysql` 基于 GORM 和 `gorm.io/driver/mysql` 封装 MySQL 连接。
-
-主要能力：
-
-- 使用结构化 `Config` 生成 MySQL DSN。
-- 支持连接超时、读写超时、连接池、连接生命周期、GORM 日志级别等配置。
-- 支持 `Connect`、`MustConnect` 创建独立连接。
-- 支持 `Init`、`MustInit`、`GetDB`、`SetDB`、`Close` 管理全局 GORM 实例。
-- 支持通过 `ConnectOption` 传入自定义 DSN、GORM 配置、GORM options，以及跳过 ping。
-- 支持 GORM sharding 分表配置和自定义分表主键生成器。
-
-### xdata/xpostgres
-
-`xdata/xpostgres` 基于 GORM 和 `gorm.io/driver/postgres` 封装 PostgreSQL 连接，整体使用方式和 `xmysql` 保持一致。
-
-主要能力：
-
-- 使用结构化 `Config` 生成 PostgreSQL DSN。
-- 支持 host、port、user、password、database、sslmode、timezone 等连接参数。
-- 支持连接池、连接生命周期、GORM 日志级别配置。
-- 支持独立连接创建和全局 GORM 实例管理。
-- 支持 GORM sharding 分表配置。
-
-### xdata/xredis
-
-`xdata/xredis` 基于 `github.com/redis/go-redis/v9` 封装 Redis 客户端。
-
-主要能力：
-
-- 支持 Redis 地址、用户名、密码、DB、连接池、超时配置。
-- 支持 `Connect`、`MustConnect` 创建客户端。
-- 支持 `Init`、`MustInit`、`GetClient`、`SetClient`、`Close` 管理全局 Redis 客户端。
-- 支持自定义 `redis.Options` 和跳过 ping。
-- 提供基于 Redis 的分布式锁。
-- 分布式锁支持普通锁和自动续期锁，并通过 Lua 脚本保证释放锁时校验锁值。
-
-### xdata/xkafka
-
-`xdata/xkafka` 基于 `github.com/segmentio/kafka-go` 封装 Kafka 生产和消费。
-
-主要能力：
-
-- 支持 broker、client id、读写超时、批量大小、批量等待时间、RequiredAcks、异步写入等配置。
-- 支持创建生产者和消费者。
-- 支持按 topic 注册和管理生产者。
-- 支持按 topic + group 注册和管理消费者。
-- 支持单条生产、批量生产。
-- 支持单条消费和批量消费。
-- 提供默认客户端和自定义 Manager，便于在服务中集中管理多个 topic。
-
-### xdata/xrabbitmq
-
-`xdata/xrabbitmq` 基于 `github.com/rabbitmq/amqp091-go` 封装 RabbitMQ 连接和消息收发。
-
-主要能力：
-
-- 支持 RabbitMQ host、port、username、password、vhost、heartbeat、locale、TLS 等连接配置。
-- 支持连接、打开 channel 和 ping。
-- 支持 exchange、queue、binding 的声明配置。
-- 支持注册生产者和消费者。
-- 支持按名称发布消息和批量发布消息。
-- 支持消费消息，并根据 handler 返回值执行 ack、nack 或 reject。
-- 提供默认客户端和自定义 Manager。
-
-### xcrypto
-
-`xcrypto` 目录按算法拆分为多个子包，覆盖业务项目中常见的加密、签名、摘要、编码和令牌场景。
-
-主要能力：
-
-- `xaes`: AES-GCM、AES-CBC 加解密。
-- `xrsa`: RSA 密钥生成、PEM 编解码、OAEP 加解密、PSS 签名和验签。
-- `xjwt`: JWT token 生成、解析、刷新，支持 issuer、subject、audience、expire 等配置。
-- `xbcrypt`: 密码哈希和密码校验。
-- `xhmac`: HMAC-SHA1、HMAC-SHA256、HMAC-SHA512 签名，支持十六进制和 Base64 输出。
-- `xmd5`: 字符串、字节切片和文件 MD5 摘要。
-- `xsha`: SHA1、SHA256、SHA384、SHA512 摘要。
-- `xbase64`: Base64、Base64URL、Base62、Base58 编解码。
-- `xuuid`: UUID 生成、去横线 UUID、解析和格式校验。
-- `xrand`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
-
-### xlog
-
-`xlog` 包基于 go-zero `logx` 做日志配置和结构化内容封装，同时提供 GORM 日志适配。
-
-主要能力：
-
-- 复用 go-zero `logx.LogConf`、`logx.LogField`、`logx.Writer`。
-- 提供更直接的 `Config`，支持 console、file、volume 输出模式。
-- 支持 json、plain 编码格式。
-- 支持 debug、info、error、severe 日志级别。
-- 支持日志路径、保留天数、压缩、切割策略、最大文件大小、最大备份数量等配置。
-- 支持统一日志 body：`msg`、`content`、`err`。
-- 提供 `Debug`、`Info`、`Warn`、`Error`、`ErrorStack`、`Severe` 等方法。
-- 支持在 context 中禁用日志输出。
-- 支持为 context 注入 trace 信息。
-- 提供 GORM logger 适配，统一 SQL 日志输出格式。
-
-### xmid
-
-`xmid` 包提供 go-zero REST 中间件。
-
-主要能力：
-
-- `Auth`: Bearer token 鉴权中间件，支持自定义 header、prefix、跳过路径、校验函数和未授权响应。
-- `AuthInfo`: 从请求 context 中读取鉴权结果。
-- `Cors`: CORS 中间件，支持允许来源、方法、请求头、暴露响应头、凭证和预检缓存时间。
-- `RateLimit`: 基于内存的简单限流中间件，支持窗口时间、请求次数、key 函数和超限响应。
-- `IP`: 客户端 IP 提取中间件，支持从指定 header 和 `RemoteAddr` 获取 IP。
-- `ClientIP`: 独立 IP 提取函数，可在非中间件场景复用。
-
-### xreply
-
-`xreply` 包用于统一 API 响应结构、公共错误码和错误响应文案，并基于 go-zero `httpx.OkJson` 直接向客户端输出 JSON。响应字段固定为 `code`、`msg`、`data`。
-
-主要能力：
-
-- `0-99`: 公共保留错误码区间，其中 `0` 表示成功，`1-99` 表示常用错误。
-- `0`: 成功码，同样维护在内置 code map 中。
-- `RegisterCodes`: 注册业务项目自定义错误码，自定义 code 必须从 `100` 开始。
-- `Vars`: 失败 msg 变量，支持 `{name}` 形式的占位符替换。
-- 内置 `CodeInvalidParam` 默认文案包含 `{field}`，例如传入 `xreply.Vars{"field": "name"}` 后输出 `invalid param: name`。
-- `Success`: 输出成功响应，固定使用 `code=0`，支持可选 msg 变量。
-- `Fail`: 根据 code 输出失败响应，msg 从错误码表自动填充。
-- `FailStatus`: 根据 HTTP status 和 code 输出失败响应，msg 从错误码表自动填充。
-- `SuccessPage`: 输出分页成功响应。
-- `SuccessMsg`: 输出指定 code 的成功响应，并使用自定义 msg 覆盖 code map 中的默认 msg。
-
-### xws
-
-`xws` 包用于 WebSocket 会话和连接管理，适合在 go-zero REST handler 中接入升级后的长连接。
-
-主要能力：
-
-- `Manager`: 管理 WebSocket 会话创建、复用、关闭和遍历。
-- `Session`: 封装单个连接编码对应的 WebSocket 连接、读写通道和生命周期。
-- `Config`: 支持最大连接数、读写缓冲区、读写通道长度、超时时间、消息类型和来源校验配置。
-- 创建会话时显式传入连接编码 `code`，不绑定具体用户、设备或鉴权概念。
-- 支持同一连接编码热重连，替换连接时不会因为旧连接退出而关闭新会话。
-- 支持 `Get`、`CloseConn`、`Count`、`Range`、`Broadcast` 等常用管理能力。
-- 日志统一使用本库 `xlog` 包输出。
-
-最小用法：
-
-```go
-manager := xws.NewManager()
-session, isNew, err := manager.Create(w, r, code)
-```
-
-### xtask
-
-`xtask` 包用于管理基于 cron 表达式的定时任务。
-
-主要能力：
-
-- `Manager`: 管理定时任务注册、启动、停止和移除。
-- `Job`: 描述任务名称、cron 表达式、是否立即执行和执行函数。
-- 支持秒级 cron 表达式。
-- 支持指定调度时区。
-- 支持同名任务覆盖注册。
-
-最小用法：
-
-```go
-manager := xtask.NewManager(xtask.WithSeconds())
-_ = manager.AddFunc("refresh-cache", "*/30 * * * * *", func(ctx context.Context) {
-	// 执行业务逻辑
-})
-manager.Start()
-defer manager.Stop()
-```
+| go-zero-core | Go | go-zero |
+| --- | --- | --- |
+| v1.0.x | 1.25+ | 1.10.1 |
 
 ## 安装
 
@@ -251,45 +28,32 @@ defer manager.Stop()
 go get go-zero-core
 ```
 
-如果作为内部模块使用，请根据实际仓库地址调整 `go.mod` 中的 module path 和业务项目的 import path。
+如果该仓库作为内部模块维护，请将业务项目中的 import path 替换为实际仓库地址。
 
-## 使用示例
+## 模块总览
 
-### JWT
-
-```go
-package main
-
-import (
-	"fmt"
-	"time"
-
-	"go-zero-core/xcrypto/xjwt"
-)
-
-func main() {
-	conf := xjwt.Config{
-		Secret: "your-secret",
-		Expire: time.Hour,
-	}
-
-	token, err := xjwt.Generate(conf, map[string]any{
-		"userId": 1001,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	claims, err := xjwt.Parse(conf, token)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(claims.Data)
-}
+```text
+.
+├── xcast/             # 类型转换、JSON、时间、map/struct、指针工具
+├── xcrypto/           # 加密、摘要、签名、编码、JWT、UUID、随机值
+├── xdata/
+│   ├── xmysql/        # MySQL GORM 连接、全局实例、sharding
+│   ├── xpostgres/     # PostgreSQL GORM 连接、全局实例、sharding
+│   ├── xredis/        # Redis 客户端、全局实例、分布式锁
+│   ├── xkafka/        # Kafka producer、consumer、manager
+│   └── xrabbitmq/     # RabbitMQ 连接、声明、生产、消费、manager
+├── xlog/              # go-zero logx 配置、结构化日志、GORM logger
+├── xmid/              # go-zero REST 中间件
+├── xreply/            # 统一 API 响应和业务错误码
+├── xtask/             # cron 定时任务管理
+└── xws/               # WebSocket 会话管理
 ```
 
+## 快速接入
+
 ### MySQL
+
+`xdata/xmysql` 使用 GORM 作为底层 ORM。`Connect` 返回错误，适合初始化流程中显式处理失败；`MustConnect` 在失败时 panic，适合服务启动期快速失败。
 
 ```go
 package main
@@ -298,83 +62,548 @@ import "go-zero-core/xdata/xmysql"
 
 func main() {
 	db := xmysql.MustConnect(xmysql.Config{
-		Host:      "127.0.0.1",
-		Port:      3306,
-		User:      "root",
-		Password:  "password",
-		DBName:    "app",
-		ParseTime: true,
+		Host:         "127.0.0.1",
+		Port:         3306,
+		User:         "root",
+		Password:     "password",
+		DBName:       "app",
+		ParseTime:    true,
+		MaxIdleConns: 10,
+		MaxOpenConns: 100,
+		LogLevel:     "warn",
 	})
 
 	_ = db
 }
 ```
 
-### Redis 分布式锁
+核心配置：
+
+- `Host`、`Port`、`User`、`Password`、`DBName`: 基础连接信息。
+- `Charset`: 默认 `utf8mb4`。
+- `ParseTime`: 是否将 MySQL 时间类型解析为 `time.Time`。
+- `Loc`: 默认 `Local`，可设置为 `Asia/Shanghai` 等时区。
+- `Timeout`、`ReadTimeout`、`WriteTimeout`: 连接、读、写超时。
+- `MaxIdleConns`、`MaxOpenConns`、`ConnMaxLifetime`、`ConnMaxIdleTime`: 连接池配置。
+- `SkipDefaultTransaction`、`PrepareStmt`、`LogLevel`: GORM 行为配置。
+- `Sharding`: GORM sharding 分表配置。
+
+全局实例适合在项目基础设施初始化阶段统一设置：
 
 ```go
-package main
+if err := xmysql.Init(xmysql.Config{Host: "127.0.0.1", User: "root", DBName: "app"}); err != nil {
+	panic(err)
+}
+db := xmysql.GetDB()
+defer xmysql.Close()
+```
 
-import (
-	"context"
-	"time"
+### PostgreSQL
 
-	"go-zero-core/xdata/xredis"
+`xdata/xpostgres` 的使用方式与 `xmysql` 保持一致，底层使用 `gorm.io/driver/postgres`。
+
+```go
+db := xpostgres.MustConnect(xpostgres.Config{
+	Host:     "127.0.0.1",
+	Port:     5432,
+	User:     "postgres",
+	Password: "password",
+	DBName:   "app",
+	SSLMode:  "disable",
+	TimeZone: "Asia/Shanghai",
+	LogLevel: "warn",
+})
+```
+
+### Redis
+
+`xdata/xredis` 基于 `github.com/redis/go-redis/v9`，支持独立客户端和全局客户端两种方式。
+
+```go
+ctx := context.Background()
+
+client := xredis.MustConnect(ctx, xredis.Config{
+	Addr:         "127.0.0.1:6379",
+	Password:     "",
+	DB:           0,
+	PoolSize:     20,
+	MinIdleConns: 5,
+})
+defer client.Close()
+```
+
+分布式锁使用 Redis `SET NX PX` 获取锁，并通过 Lua 脚本校验锁 value 后释放，避免误删其他实例持有的锁。
+
+```go
+lock, err := xredis.AcquireLock(ctx, client, "lock:order:1001", 30*time.Second)
+if err != nil {
+	return err
+}
+defer func() {
+	_ = lock.Unlock(ctx)
+}()
+
+// 执行需要互斥的业务逻辑
+```
+
+长任务可使用自动续约锁。`renewInterval` 必须大于 `0` 且小于 `ttl`。
+
+```go
+lock, err := xredis.AcquireRenewalLock(ctx, client, "lock:job:sync", time.Minute, 20*time.Second)
+if err != nil {
+	return err
+}
+defer lock.Unlock(ctx)
+
+if err := lock.RenewErr(); err != nil {
+	return err
+}
+```
+
+### Kafka
+
+`xdata/xkafka` 基于 `github.com/segmentio/kafka-go`，推荐通过 `Manager` 统一注册和管理多个 topic 的生产者、消费者。
+
+```go
+ctx := context.Background()
+
+conf := xkafka.Config{
+	Brokers:             []string{"127.0.0.1:9092"},
+	ClientID:            "order-service",
+	BatchSize:           100,
+	BatchTimeout:        1000,
+	ConsumeBatchSize:    100,
+	ConsumeBatchTimeout: 1000,
+}
+
+manager := xkafka.NewManager()
+defer manager.Close()
+
+if err := manager.RegisterProducer("order.created", conf); err != nil {
+	return err
+}
+if err := manager.RegisterConsumer("order.created", "order-worker", conf); err != nil {
+	return err
+}
+```
+
+发送单条消息：
+
+```go
+err := manager.Produce(ctx, "order.created", kafka.Message{
+	Key:   []byte("1001"),
+	Value: []byte(`{"orderId":1001}`),
+})
+if err != nil {
+	return err
+}
+```
+
+批量发送消息：
+
+```go
+err := manager.ProduceBatch(ctx, "order.created",
+	kafka.Message{Key: []byte("1001"), Value: []byte(`{"orderId":1001}`)},
+	kafka.Message{Key: []byte("1002"), Value: []byte(`{"orderId":1002}`)},
 )
+if err != nil {
+	return err
+}
+```
 
-func main() {
-	ctx := context.Background()
-	client := xredis.MustConnect(ctx, xredis.Config{
-		Addr: "127.0.0.1:6379",
-	})
-	defer client.Close()
+单条消费会在 handler 成功返回后提交 offset；handler 返回错误时会停止本轮消费并向调用方返回错误。
 
-	lock, err := xredis.AcquireLock(ctx, client, "lock:job", 30*time.Second)
+```go
+err := manager.Consume(ctx, "order.created", "order-worker", func(ctx context.Context, msg kafka.Message) error {
+	// 处理 msg.Key 和 msg.Value
+	return nil
+})
+if err != nil {
+	return err
+}
+```
+
+批量消费会在达到 `batchSize` 或 `batchTimeout` 后触发 handler。`batchSize` 或 `batchTimeout` 传 `0` 时使用注册消费者时的 `Config` 默认值。
+
+```go
+err := manager.ConsumeBatch(ctx, "order.created", "order-worker", 0, 0, func(ctx context.Context, msgs []kafka.Message) error {
+	// 批量处理消息
+	return nil
+})
+if err != nil {
+	return err
+}
+```
+
+核心配置：
+
+- `Brokers`: Kafka broker 地址列表，生产者和消费者必填。
+- `ClientID`: Kafka client id，用于标识客户端。
+- `DialTimeout`、`ReadTimeout`、`WriteTimeout`: 连接、读取和写入超时。
+- `BatchSize`、`BatchTimeout`: 生产者批量写入配置，`BatchTimeout` 单位为毫秒。
+- `ConsumeBatchSize`、`ConsumeBatchTimeout`: 批量消费配置，`ConsumeBatchTimeout` 单位为毫秒。
+- `RequiredAcks`: 写入确认级别，透传 `kafka.RequiredAcks`。
+- `Async`: 是否异步写入消息。
+
+### RabbitMQ
+
+`xdata/xrabbitmq` 基于 `github.com/rabbitmq/amqp091-go`，通过命名 producer/consumer 管理连接、channel、exchange、queue、binding、发布和消费。
+
+```go
+ctx := context.Background()
+
+connConf := xrabbitmq.Config{
+	Host:           "127.0.0.1",
+	Port:           5672,
+	Username:       "guest",
+	Password:       "guest",
+	VHost:          "/",
+	ConnectionName: "order-service",
+}
+
+manager := xrabbitmq.NewManager()
+defer manager.Close()
+```
+
+注册生产者时可同时声明 exchange、queue 和 binding。`RoutingKey` 为空时，会使用 `Binding.RoutingKey` 作为发布路由键。
+
+```go
+producerConf := xrabbitmq.ProducerConfig{
+	Connection: connConf,
+	Exchange: xrabbitmq.ExchangeConfig{
+		Name:    "order.exchange",
+		Kind:    "direct",
+		Durable: true,
+	},
+	Queue: xrabbitmq.QueueConfig{
+		Name:    "order.created.queue",
+		Durable: true,
+	},
+	Binding: xrabbitmq.BindingConfig{
+		Queue:      "order.created.queue",
+		Exchange:   "order.exchange",
+		RoutingKey: "order.created",
+	},
+	RoutingKey: "order.created",
+}
+
+if err := manager.RegisterProducer("order-producer", producerConf); err != nil {
+	return err
+}
+```
+
+发布消息：
+
+```go
+err := manager.Publish(ctx, "order-producer", amqp.Publishing{
+	ContentType:  "application/json",
+	DeliveryMode: amqp.Persistent,
+	Body:         []byte(`{"orderId":1001}`),
+})
+if err != nil {
+	return err
+}
+```
+
+注册消费者时同样可声明 exchange、queue 和 binding，并可配置 QoS、ack 行为和失败是否重新入队。
+
+```go
+consumerConf := xrabbitmq.ConsumerConfig{
+	Connection: connConf,
+	Exchange: xrabbitmq.ExchangeConfig{
+		Name:    "order.exchange",
+		Kind:    "direct",
+		Durable: true,
+	},
+	Queue: xrabbitmq.QueueConfig{
+		Name:    "order.created.queue",
+		Durable: true,
+	},
+	Binding: xrabbitmq.BindingConfig{
+		Queue:      "order.created.queue",
+		Exchange:   "order.exchange",
+		RoutingKey: "order.created",
+	},
+	Consumer:      "order-worker",
+	PrefetchCount: 10,
+	NackRequeue:   true,
+}
+
+if err := manager.RegisterConsumer("order-consumer", consumerConf); err != nil {
+	return err
+}
+```
+
+消费消息时，`AutoAck=false` 会在 handler 成功后自动 `Ack`；handler 返回错误时执行 `Nack`，是否重新入队由 `NackRequeue` 控制。
+
+```go
+err := manager.Consume(ctx, "order-consumer", func(ctx context.Context, msg amqp.Delivery) error {
+	// 处理 msg.Body
+	return nil
+})
+if err != nil {
+	return err
+}
+```
+
+核心配置：
+
+- `Config.URL`: 完整 AMQP 连接地址，配置后优先使用。
+- `Config.Host`、`Port`、`Username`、`Password`、`VHost`: 连接信息。
+- `ExchangeConfig`: exchange 名称、类型、持久化、自动删除、声明参数。
+- `QueueConfig`: queue 名称、持久化、排他、自动删除、声明参数。
+- `BindingConfig`: queue、exchange、routing key 绑定关系。
+- `ProducerConfig.Mandatory`、`Immediate`: 发布行为参数。
+- `ConsumerConfig.AutoAck`、`PrefetchCount`、`NackRequeue`: 消费确认、预取和失败处理策略。
+
+### JWT
+
+`xcrypto/xjwt` 用于生成、解析和刷新 JWT。业务 claims 放在 `Data` 中。
+
+```go
+conf := xjwt.Config{
+	Secret: "your-secret",
+	Expire: time.Hour,
+}
+
+token, err := xjwt.Generate(conf, map[string]any{
+	"userId": 1001,
+})
+if err != nil {
+	return err
+}
+
+claims, err := xjwt.Parse(conf, token)
+if err != nil {
+	return err
+}
+
+fmt.Println(claims.Data)
+```
+
+### REST 中间件
+
+`xmid` 提供 go-zero REST 中间件。中间件遵循 `rest.Middleware` 类型，可直接通过 `server.Use` 注册。
+
+```go
+server := rest.MustNewServer(rest.RestConf{})
+defer server.Stop()
+
+server.Use(xmid.Auth(xmid.AuthConfig{
+	SkipPaths: []string{"/healthz", "/login"},
+	Verify: func(r *http.Request, token string) (any, error) {
+		claims, err := xjwt.Parse(jwtConf, token)
+		if err != nil {
+			return nil, err
+		}
+		return claims.Data, nil
+	},
+}))
+```
+
+在 handler 中读取认证信息：
+
+```go
+authInfo, ok := xmid.AuthInfo(r.Context())
+if !ok {
+	xreply.FailStatus(w, http.StatusUnauthorized, xreply.CodeUnauthorized)
+	return
+}
+_ = authInfo
+```
+
+可用中间件：
+
+- `Auth`: Bearer token 鉴权，支持自定义 header、prefix、跳过路径、校验函数和未授权响应。
+- `Cors`: CORS 处理，支持来源、方法、请求头、暴露响应头、凭证和预检缓存时间。
+- `RateLimit`: 进程内窗口限流，适合单实例或轻量保护场景。
+- `IP`: 将客户端 IP 写入请求上下文。
+- `ClientIP`: 独立 IP 提取函数，可在非中间件场景使用。
+
+### 统一响应
+
+`xreply` 固定响应结构为：
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {}
+}
+```
+
+基本用法：
+
+```go
+xreply.Success(w, user)
+xreply.SuccessPage(w, users, total, page, pageSize)
+xreply.Fail(w, xreply.CodeInvalidParam, xreply.Vars{"field": "name"})
+xreply.FailStatus(w, http.StatusUnauthorized, xreply.CodeUnauthorized)
+```
+
+错误码约定：
+
+- `0`: 成功。
+- `1-99`: 公共错误码，由 `xreply` 保留。
+- `100+`: 业务项目自定义错误码，可通过 `RegisterCodes` 注册。
+
+```go
+const CodeOrderNotFound = 10001
+
+xreply.RegisterCodes(map[int]string{
+	CodeOrderNotFound: "order not found",
+})
+```
+
+### WebSocket
+
+`xws` 封装 WebSocket 升级、会话存储、读写通道、广播和同 code 热重连。`code` 是业务传入的连接标识，库本身不绑定用户、设备或权限模型。
+
+```go
+manager := xws.NewManager(xws.Config{
+	MaxConnTotal:  10000,
+	ReadChanSize:  1024,
+	WriteChanSize: 1024,
+})
+
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	code := r.URL.Query().Get("code")
+	session, isNew, err := manager.Create(w, r, code)
 	if err != nil {
-		panic(err)
+		return
 	}
-	defer lock.Unlock(ctx)
 
-	// 执行业务逻辑
+	if isNew {
+		go func() {
+			for msg := range session.Read() {
+				_ = session.Write(msg)
+			}
+		}()
+	}
 }
 ```
 
-### 鉴权中间件
+常用方法：
+
+- `Create(w, r, code)`: 创建或复用指定 code 的会话。
+- `Get(code)`: 获取会话。
+- `CloseConn(code)`: 关闭指定会话。
+- `Count()`: 当前在线会话数。
+- `Range(fn)`: 遍历会话快照。
+- `Broadcast(msg)`: 向所有在线会话写入消息。
+
+### 定时任务
+
+`xtask` 基于 `github.com/robfig/cron/v3`，用于进程内定时任务。
 
 ```go
-package main
+manager := xtask.NewManager(xtask.WithSeconds())
 
-import (
-	"net/http"
-
-	"go-zero-core/xmid"
-	"github.com/zeromicro/go-zero/rest"
-)
-
-func main() {
-	server := rest.MustNewServer(rest.RestConf{})
-	defer server.Stop()
-
-	server.Use(xmid.Auth(xmid.AuthConfig{
-		Verify: func(r *http.Request, token string) (any, error) {
-			return token, nil
-		},
-	}))
-
-	server.Start()
+err := manager.AddFuncNow("refresh-cache", "*/30 * * * * *", func(ctx context.Context) {
+	// 执行业务逻辑
+})
+if err != nil {
+	panic(err)
 }
+
+manager.Start()
+defer manager.Stop()
 ```
 
-## 开发命令
+说明：
+
+- `WithSeconds()` 启用秒级 cron 表达式。
+- `WithLocation(location)` 指定调度时区。
+- 同名任务重复注册时，新任务会替换旧任务。
+- `Stop()` 会停止调度器，并等待已经运行中的任务退出。
+
+## 包级 API 速查
+
+### `xcast`
+
+- 字符串、整数、无符号整数、浮点数、布尔值互转。
+- `any` 转字符串、整数、`int64`、`float64`、布尔值，并提供默认值版本。
+- `time.Time` 与 Unix 秒、毫秒时间戳互转。
+- JSON marshal、unmarshal、格式化输出。
+- struct 与 map 转换。
+- 泛型指针工具：创建指针、取值、默认值。
+
+### `xcrypto`
+
+- `xaes`: AES-GCM、AES-CBC 加解密。
+- `xrsa`: RSA 密钥生成、PEM 编解码、OAEP 加解密、PSS 签名和验签。
+- `xjwt`: JWT 生成、解析、刷新。
+- `xbcrypt`: 密码哈希和校验。
+- `xhmac`: HMAC-SHA1、HMAC-SHA256、HMAC-SHA512 签名。
+- `xmd5`: 字符串、字节切片、文件 MD5。
+- `xsha`: SHA1、SHA256、SHA384、SHA512。
+- `xbase64`: Base64、Base64URL、Base62、Base58。
+- `xuuid`: UUID 生成、解析、校验、去横线 UUID。
+- `xrand`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
+
+### `xdata`
+
+- `xmysql`: `Connect`、`MustConnect`、`Init`、`MustInit`、`GetDB`、`SetDB`、`Close`、sharding。
+- `xpostgres`: PostgreSQL 版本的 GORM 连接与全局实例管理。
+- `xredis`: `Connect`、`MustConnect`、`Init`、`MustInit`、`GetClient`、`SetClient`、`Close`、分布式锁。
+- `xkafka`: producer、consumer、topic/group manager、单条和批量生产消费。
+- `xrabbitmq`: 连接、channel、exchange/queue/binding 声明、producer、consumer、manager。
+
+### `xlog`
+
+- 复用 go-zero `logx`，支持 console、file、volume 输出模式。
+- 支持 json、plain 编码，debug、info、error、severe 级别。
+- 提供 `Debug`、`Info`、`Warn`、`Error`、`ErrorStack`、`Severe`。
+- 支持 context trace 注入、禁用日志输出。
+- 提供 GORM logger 适配，统一 SQL 日志结构。
+
+### `xmid`
+
+- `Auth`: 请求鉴权。
+- `AuthInfo`: 从 context 获取鉴权信息。
+- `Cors`: 跨域处理。
+- `RateLimit`: 进程内限流。
+- `IP`、`ClientIP`: 客户端 IP 提取。
+
+### `xreply`
+
+- `Success`: 成功响应。
+- `SuccessPage`: 分页成功响应。
+- `SuccessMsg`: 自定义成功消息。
+- `Fail`: 业务失败响应，HTTP 状态码为 200。
+- `FailStatus`: 指定 HTTP 状态码的失败响应。
+- `RegisterCodes`: 注册业务错误码。
+
+### `xws`
+
+- `Manager`: 会话创建、获取、关闭、遍历、广播。
+- `Session`: `Code`、`Read`、`Write`、`Close`、`IsAlive`。
+- 支持相同 code 重连，旧连接退出不会关闭新会话。
+
+### `xtask`
+
+- `NewManager`: 创建任务管理器。
+- `Add`、`AddFunc`、`AddFuncNow`: 注册任务。
+- `Start`、`Stop`: 启动和停止调度器。
+- `Remove`、`Count`、`Entries`: 任务管理和快照查询。
+
+## 接入建议
+
+- 服务启动期优先初始化数据库、Redis、消息队列和日志，失败时直接终止进程，避免服务以不完整状态运行。
+- 业务代码中优先传递显式客户端或 `*gorm.DB`；全局实例更适合基础设施较简单的服务。
+- Redis 分布式锁必须始终设置合理 TTL，并在业务结束后调用 `Unlock`。长任务使用自动续约锁时，应定期检查 `RenewErr`。
+- `xmid.RateLimit` 是进程内限流，不适合多实例全局限流。
+- WebSocket 的 `code` 应由业务层完成鉴权和唯一性设计，本库只负责连接生命周期。
+- `xreply` 的 `100+` 错误码建议由业务模块集中注册，避免跨模块冲突。
+
+## 开发
 
 ```bash
 go mod tidy
 go test ./...
 ```
 
-## 依赖
-
-主要依赖：
+## 主要依赖
 
 - `github.com/zeromicro/go-zero`
 - `gorm.io/gorm`
@@ -384,6 +613,8 @@ go test ./...
 - `github.com/redis/go-redis/v9`
 - `github.com/segmentio/kafka-go`
 - `github.com/rabbitmq/amqp091-go`
+- `github.com/gorilla/websocket`
+- `github.com/robfig/cron/v3`
 - `github.com/golang-jwt/jwt/v5`
 
 ## 许可证

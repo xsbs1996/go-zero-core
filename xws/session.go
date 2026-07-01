@@ -186,8 +186,8 @@ func (s *Session) writeLoop() {
 	}
 }
 
-// Send 发送消息到客户端
-func (s *Session) Send(msg []byte) bool {
+// Write 写入下行消息
+func (s *Session) Write(msg []byte) bool {
 	if s == nil || !s.IsAlive() {
 		return false
 	}
@@ -217,14 +217,15 @@ func (s *Session) IsAlive() bool {
 	return s != nil && s.state.Load() == 1
 }
 
-// ReadChannel 返回上行消息读取通道
-func (s *Session) ReadChannel() <-chan []byte {
+// Read 返回上行消息读取通道
+func (s *Session) Read() <-chan []byte {
 	if s == nil {
 		return nil
 	}
 	return s.readCh
 }
 
+// currentConn 返回当前连接和连接版本
 func (s *Session) currentConn() (*websocket.Conn, uint64) {
 	s.connMu.RLock()
 	conn := s.conn
@@ -233,6 +234,7 @@ func (s *Session) currentConn() (*websocket.Conn, uint64) {
 	return conn, seq
 }
 
+// isCurrentConn 判断连接和版本是否仍是当前生效连接
 func (s *Session) isCurrentConn(conn *websocket.Conn, seq uint64) bool {
 	s.connMu.RLock()
 	current := s.conn == conn && s.connSeq.Load() == seq

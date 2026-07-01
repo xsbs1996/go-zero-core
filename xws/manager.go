@@ -121,7 +121,7 @@ func (m *Manager) Range(fn func(session *Session) bool) {
 // Broadcast 向全部在线会话发送消息
 func (m *Manager) Broadcast(msg []byte) {
 	m.Range(func(session *Session) bool {
-		session.Send(msg)
+		session.Write(msg)
 		return true
 	})
 }
