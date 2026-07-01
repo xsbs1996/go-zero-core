@@ -26,29 +26,29 @@
 
 ```text
 .
-├── convert/                 # 类型转换和序列化辅助工具
-├── datax/                   # 数据库、缓存和消息队列封装
-│   ├── kafkax/              # Kafka 生产者、消费者和客户端管理
-│   ├── mysqlx/              # MySQL GORM 连接、全局实例和分表支持
-│   ├── postgresx/           # PostgreSQL GORM 连接、全局实例和分表支持
-│   ├── rabbitmqx/           # RabbitMQ 连接、声明、生产者、消费者和客户端管理
-│   └── redisx/              # Redis 连接、全局客户端和分布式锁
-├── cryptox/                 # 加密、摘要、编码、JWT、UUID 和随机值工具
-│   ├── aesx/                # AES-GCM、AES-CBC 加解密
-│   ├── base64x/             # Base64、Base64URL、Base62、Base58 编解码
-│   ├── bcryptx/             # BCrypt 密码哈希和校验
-│   ├── hmacx/               # HMAC-SHA 签名和校验
-│   ├── jwtx/                # JWT 生成、解析和刷新
-│   ├── md5x/                # MD5 字符串、字节和文件摘要
-│   ├── randx/               # 随机字节、十六进制、数字和字符串
-│   ├── rsax/                # RSA 密钥、OAEP 加解密和 PSS 签名
-│   ├── shax/                # SHA1、SHA256、SHA384、SHA512 摘要
-│   └── uuidx/               # UUID 生成、解析和校验
-├── logs/                    # go-zero logx 配置、结构化日志和 GORM 日志适配
-├── midx/                    # go-zero REST 中间件
-├── replyx/                  # 统一 API 响应结构和响应辅助能力
-├── taskx/                   # 定时任务管理
-├── wsx/                     # WebSocket 会话和连接管理
+├── xcast/                   # 类型转换和序列化辅助工具
+├── xdata/                   # 数据库、缓存和消息队列封装
+│   ├── xkafka/              # Kafka 生产者、消费者和客户端管理
+│   ├── xmysql/              # MySQL GORM 连接、全局实例和分表支持
+│   ├── xpostgres/           # PostgreSQL GORM 连接、全局实例和分表支持
+│   ├── xrabbitmq/           # RabbitMQ 连接、声明、生产者、消费者和客户端管理
+│   └── xredis/              # Redis 连接、全局客户端和分布式锁
+├── xcrypto/                 # 加密、摘要、编码、JWT、UUID 和随机值工具
+│   ├── xaes/                # AES-GCM、AES-CBC 加解密
+│   ├── xbase64/             # Base64、Base64URL、Base62、Base58 编解码
+│   ├── xbcrypt/             # BCrypt 密码哈希和校验
+│   ├── xhmac/               # HMAC-SHA 签名和校验
+│   ├── xjwt/                # JWT 生成、解析和刷新
+│   ├── xmd5/                # MD5 字符串、字节和文件摘要
+│   ├── xrand/               # 随机字节、十六进制、数字和字符串
+│   ├── xrsa/                # RSA 密钥、OAEP 加解密和 PSS 签名
+│   ├── xsha/                # SHA1、SHA256、SHA384、SHA512 摘要
+│   └── xuuid/               # UUID 生成、解析和校验
+├── xlog/                    # go-zero logx 配置、结构化日志和 GORM 日志适配
+├── xmid/                    # go-zero REST 中间件
+├── xreply/                  # 统一 API 响应结构和响应辅助能力
+├── xtask/                   # 定时任务管理
+├── xws/                     # WebSocket 会话和连接管理
 ├── go.mod                   # Go 模块定义
 ├── go.sum                   # 依赖版本锁定
 ├── LICENSE                  # 许可证
@@ -57,9 +57,9 @@
 
 ## 功能介绍
 
-### convert
+### xcast
 
-`convert` 包提供基础类型转换，适合替代业务代码中分散的 `strconv`、`json.Marshal`、`time.Format` 等重复逻辑。
+`xcast` 包提供基础类型转换，适合替代业务代码中分散的 `strconv`、`json.Marshal`、`time.Format` 等重复逻辑。
 
 主要能力：
 
@@ -71,9 +71,9 @@
 - struct 和 map 之间转换。
 - 泛型指针工具：创建指针、取指针值、取默认值。
 
-### datax/mysqlx
+### xdata/xmysql
 
-`datax/mysqlx` 基于 GORM 和 `gorm.io/driver/mysql` 封装 MySQL 连接。
+`xdata/xmysql` 基于 GORM 和 `gorm.io/driver/mysql` 封装 MySQL 连接。
 
 主要能力：
 
@@ -84,9 +84,9 @@
 - 支持通过 `ConnectOption` 传入自定义 DSN、GORM 配置、GORM options，以及跳过 ping。
 - 支持 GORM sharding 分表配置和自定义分表主键生成器。
 
-### datax/postgresx
+### xdata/xpostgres
 
-`datax/postgresx` 基于 GORM 和 `gorm.io/driver/postgres` 封装 PostgreSQL 连接，整体使用方式和 `mysqlx` 保持一致。
+`xdata/xpostgres` 基于 GORM 和 `gorm.io/driver/postgres` 封装 PostgreSQL 连接，整体使用方式和 `xmysql` 保持一致。
 
 主要能力：
 
@@ -96,9 +96,9 @@
 - 支持独立连接创建和全局 GORM 实例管理。
 - 支持 GORM sharding 分表配置。
 
-### datax/redisx
+### xdata/xredis
 
-`datax/redisx` 基于 `github.com/redis/go-redis/v9` 封装 Redis 客户端。
+`xdata/xredis` 基于 `github.com/redis/go-redis/v9` 封装 Redis 客户端。
 
 主要能力：
 
@@ -109,9 +109,9 @@
 - 提供基于 Redis 的分布式锁。
 - 分布式锁支持普通锁和自动续期锁，并通过 Lua 脚本保证释放锁时校验锁值。
 
-### datax/kafkax
+### xdata/xkafka
 
-`datax/kafkax` 基于 `github.com/segmentio/kafka-go` 封装 Kafka 生产和消费。
+`xdata/xkafka` 基于 `github.com/segmentio/kafka-go` 封装 Kafka 生产和消费。
 
 主要能力：
 
@@ -123,9 +123,9 @@
 - 支持单条消费和批量消费。
 - 提供默认客户端和自定义 Manager，便于在服务中集中管理多个 topic。
 
-### datax/rabbitmqx
+### xdata/xrabbitmq
 
-`datax/rabbitmqx` 基于 `github.com/rabbitmq/amqp091-go` 封装 RabbitMQ 连接和消息收发。
+`xdata/xrabbitmq` 基于 `github.com/rabbitmq/amqp091-go` 封装 RabbitMQ 连接和消息收发。
 
 主要能力：
 
@@ -137,26 +137,26 @@
 - 支持消费消息，并根据 handler 返回值执行 ack、nack 或 reject。
 - 提供默认客户端和自定义 Manager。
 
-### cryptox
+### xcrypto
 
-`cryptox` 目录按算法拆分为多个子包，覆盖业务项目中常见的加密、签名、摘要、编码和令牌场景。
+`xcrypto` 目录按算法拆分为多个子包，覆盖业务项目中常见的加密、签名、摘要、编码和令牌场景。
 
 主要能力：
 
-- `aesx`: AES-GCM、AES-CBC 加解密。
-- `rsax`: RSA 密钥生成、PEM 编解码、OAEP 加解密、PSS 签名和验签。
-- `jwtx`: JWT token 生成、解析、刷新，支持 issuer、subject、audience、expire 等配置。
-- `bcryptx`: 密码哈希和密码校验。
-- `hmacx`: HMAC-SHA1、HMAC-SHA256、HMAC-SHA512 签名，支持十六进制和 Base64 输出。
-- `md5x`: 字符串、字节切片和文件 MD5 摘要。
-- `shax`: SHA1、SHA256、SHA384、SHA512 摘要。
-- `base64x`: Base64、Base64URL、Base62、Base58 编解码。
-- `uuidx`: UUID 生成、去横线 UUID、解析和格式校验。
-- `randx`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
+- `xaes`: AES-GCM、AES-CBC 加解密。
+- `xrsa`: RSA 密钥生成、PEM 编解码、OAEP 加解密、PSS 签名和验签。
+- `xjwt`: JWT token 生成、解析、刷新，支持 issuer、subject、audience、expire 等配置。
+- `xbcrypt`: 密码哈希和密码校验。
+- `xhmac`: HMAC-SHA1、HMAC-SHA256、HMAC-SHA512 签名，支持十六进制和 Base64 输出。
+- `xmd5`: 字符串、字节切片和文件 MD5 摘要。
+- `xsha`: SHA1、SHA256、SHA384、SHA512 摘要。
+- `xbase64`: Base64、Base64URL、Base62、Base58 编解码。
+- `xuuid`: UUID 生成、去横线 UUID、解析和格式校验。
+- `xrand`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
 
-### logs
+### xlog
 
-`logs` 包基于 go-zero `logx` 做日志配置和结构化内容封装，同时提供 GORM 日志适配。
+`xlog` 包基于 go-zero `logx` 做日志配置和结构化内容封装，同时提供 GORM 日志适配。
 
 主要能力：
 
@@ -171,9 +171,9 @@
 - 支持为 context 注入 trace 信息。
 - 提供 GORM logger 适配，统一 SQL 日志输出格式。
 
-### midx
+### xmid
 
-`midx` 包提供 go-zero REST 中间件。
+`xmid` 包提供 go-zero REST 中间件。
 
 主要能力：
 
@@ -184,9 +184,9 @@
 - `IP`: 客户端 IP 提取中间件，支持从指定 header 和 `RemoteAddr` 获取 IP。
 - `ClientIP`: 独立 IP 提取函数，可在非中间件场景复用。
 
-### replyx
+### xreply
 
-`replyx` 包用于统一 API 响应结构、公共错误码和错误响应文案，并基于 go-zero `httpx.OkJson` 直接向客户端输出 JSON。响应字段固定为 `code`、`msg`、`data`。
+`xreply` 包用于统一 API 响应结构、公共错误码和错误响应文案，并基于 go-zero `httpx.OkJson` 直接向客户端输出 JSON。响应字段固定为 `code`、`msg`、`data`。
 
 主要能力：
 
@@ -194,16 +194,16 @@
 - `0`: 成功码，同样维护在内置 code map 中。
 - `RegisterCodes`: 注册业务项目自定义错误码，自定义 code 必须从 `100` 开始。
 - `Vars`: 失败 msg 变量，支持 `{name}` 形式的占位符替换。
-- 内置 `CodeInvalidParam` 默认文案包含 `{field}`，例如传入 `replyx.Vars{"field": "name"}` 后输出 `invalid param: name`。
+- 内置 `CodeInvalidParam` 默认文案包含 `{field}`，例如传入 `xreply.Vars{"field": "name"}` 后输出 `invalid param: name`。
 - `Success`: 输出成功响应，固定使用 `code=0`，支持可选 msg 变量。
 - `Fail`: 根据 code 输出失败响应，msg 从错误码表自动填充。
 - `FailStatus`: 根据 HTTP status 和 code 输出失败响应，msg 从错误码表自动填充。
 - `SuccessPage`: 输出分页成功响应。
 - `SuccessMsg`: 输出指定 code 的成功响应，并使用自定义 msg 覆盖 code map 中的默认 msg。
 
-### wsx
+### xws
 
-`wsx` 包用于 WebSocket 会话和连接管理，适合在 go-zero REST handler 中接入升级后的长连接。
+`xws` 包用于 WebSocket 会话和连接管理，适合在 go-zero REST handler 中接入升级后的长连接。
 
 主要能力：
 
@@ -213,18 +213,18 @@
 - 创建会话时显式传入连接编码 `code`，不绑定具体用户、设备或鉴权概念。
 - 支持同一连接编码热重连，替换连接时不会因为旧连接退出而关闭新会话。
 - 支持 `Get`、`CloseConn`、`Count`、`Range`、`Broadcast` 等常用管理能力。
-- 日志统一使用本库 `logs` 包输出。
+- 日志统一使用本库 `xlog` 包输出。
 
 最小用法：
 
 ```go
-manager := wsx.NewManager()
+manager := xws.NewManager()
 session, isNew, err := manager.Create(w, r, code)
 ```
 
-### taskx
+### xtask
 
-`taskx` 包用于管理基于 cron 表达式的定时任务。
+`xtask` 包用于管理基于 cron 表达式的定时任务。
 
 主要能力：
 
@@ -237,7 +237,7 @@ session, isNew, err := manager.Create(w, r, code)
 最小用法：
 
 ```go
-manager := taskx.NewManager(taskx.WithSeconds())
+manager := xtask.NewManager(xtask.WithSeconds())
 _ = manager.AddFunc("refresh-cache", "*/30 * * * * *", func(ctx context.Context) {
 	// 执行业务逻辑
 })
@@ -264,23 +264,23 @@ import (
 	"fmt"
 	"time"
 
-	"go-zero-core/cryptox/jwtx"
+	"go-zero-core/xcrypto/xjwt"
 )
 
 func main() {
-	conf := jwtx.Config{
+	conf := xjwt.Config{
 		Secret: "your-secret",
 		Expire: time.Hour,
 	}
 
-	token, err := jwtx.Generate(conf, map[string]any{
+	token, err := xjwt.Generate(conf, map[string]any{
 		"userId": 1001,
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	claims, err := jwtx.Parse(conf, token)
+	claims, err := xjwt.Parse(conf, token)
 	if err != nil {
 		panic(err)
 	}
@@ -294,10 +294,10 @@ func main() {
 ```go
 package main
 
-import "go-zero-core/datax/mysqlx"
+import "go-zero-core/xdata/xmysql"
 
 func main() {
-	db := mysqlx.MustConnect(mysqlx.Config{
+	db := xmysql.MustConnect(xmysql.Config{
 		Host:      "127.0.0.1",
 		Port:      3306,
 		User:      "root",
@@ -319,17 +319,17 @@ import (
 	"context"
 	"time"
 
-	"go-zero-core/datax/redisx"
+	"go-zero-core/xdata/xredis"
 )
 
 func main() {
 	ctx := context.Background()
-	client := redisx.MustConnect(ctx, redisx.Config{
+	client := xredis.MustConnect(ctx, xredis.Config{
 		Addr: "127.0.0.1:6379",
 	})
 	defer client.Close()
 
-	lock, err := redisx.AcquireLock(ctx, client, "lock:job", 30*time.Second)
+	lock, err := xredis.AcquireLock(ctx, client, "lock:job", 30*time.Second)
 	if err != nil {
 		panic(err)
 	}
@@ -347,7 +347,7 @@ package main
 import (
 	"net/http"
 
-	"go-zero-core/midx"
+	"go-zero-core/xmid"
 	"github.com/zeromicro/go-zero/rest"
 )
 
@@ -355,7 +355,7 @@ func main() {
 	server := rest.MustNewServer(rest.RestConf{})
 	defer server.Stop()
 
-	server.Use(midx.Auth(midx.AuthConfig{
+	server.Use(xmid.Auth(xmid.AuthConfig{
 		Verify: func(r *http.Request, token string) (any, error) {
 			return token, nil
 		},
