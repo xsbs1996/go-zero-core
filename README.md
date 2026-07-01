@@ -4,6 +4,12 @@
 
 当前模块名为 `go-zero-core`，Go 版本要求为 `1.25+`。
 
+## 版本适配
+
+| go-zero-core 版本 | go-zero 版本 |
+| --- | --- |
+| v1.0 系列 | v1.10.1 |
+
 ## 项目定位
 
 这个仓库更适合作为业务服务的内部基础库使用，而不是完整的应用框架。它不接管 go-zero 的工程结构，也不替代 go-zero、GORM、go-redis、kafka-go 或 RabbitMQ 客户端本身，而是在这些库之上提供更贴近业务项目的初始化、配置、封装和辅助函数。
@@ -21,13 +27,13 @@
 ```text
 .
 ├── convert/                 # 类型转换和序列化辅助工具
-├── dbs/                     # 数据库、缓存和消息队列封装
+├── datax/                   # 数据库、缓存和消息队列封装
 │   ├── kafkax/              # Kafka 生产者、消费者和客户端管理
 │   ├── mysqlx/              # MySQL GORM 连接、全局实例和分表支持
 │   ├── postgresx/           # PostgreSQL GORM 连接、全局实例和分表支持
 │   ├── rabbitmqx/           # RabbitMQ 连接、声明、生产者、消费者和客户端管理
 │   └── redisx/              # Redis 连接、全局客户端和分布式锁
-├── encryption/              # 加密、摘要、编码、JWT、UUID 和随机值工具
+├── cryptox/                 # 加密、摘要、编码、JWT、UUID 和随机值工具
 │   ├── aesx/                # AES-GCM、AES-CBC 加解密
 │   ├── base64x/             # Base64、Base64URL、Base62、Base58 编解码
 │   ├── bcryptx/             # BCrypt 密码哈希和校验
@@ -40,7 +46,9 @@
 │   └── uuidx/               # UUID 生成、解析和校验
 ├── logs/                    # go-zero logx 配置、结构化日志和 GORM 日志适配
 ├── midx/                    # go-zero REST 中间件
-├── response/                # HTTP 响应封装包
+├── replyx/                  # 统一 API 响应结构和响应辅助能力
+├── taskx/                   # 定时任务管理
+├── wsx/                     # WebSocket 会话和连接管理
 ├── go.mod                   # Go 模块定义
 ├── go.sum                   # 依赖版本锁定
 ├── LICENSE                  # 许可证
@@ -63,9 +71,9 @@
 - struct 和 map 之间转换。
 - 泛型指针工具：创建指针、取指针值、取默认值。
 
-### dbs/mysqlx
+### datax/mysqlx
 
-`dbs/mysqlx` 基于 GORM 和 `gorm.io/driver/mysql` 封装 MySQL 连接。
+`datax/mysqlx` 基于 GORM 和 `gorm.io/driver/mysql` 封装 MySQL 连接。
 
 主要能力：
 
@@ -76,9 +84,9 @@
 - 支持通过 `ConnectOption` 传入自定义 DSN、GORM 配置、GORM options，以及跳过 ping。
 - 支持 GORM sharding 分表配置和自定义分表主键生成器。
 
-### dbs/postgresx
+### datax/postgresx
 
-`dbs/postgresx` 基于 GORM 和 `gorm.io/driver/postgres` 封装 PostgreSQL 连接，整体使用方式和 `mysqlx` 保持一致。
+`datax/postgresx` 基于 GORM 和 `gorm.io/driver/postgres` 封装 PostgreSQL 连接，整体使用方式和 `mysqlx` 保持一致。
 
 主要能力：
 
@@ -88,9 +96,9 @@
 - 支持独立连接创建和全局 GORM 实例管理。
 - 支持 GORM sharding 分表配置。
 
-### dbs/redisx
+### datax/redisx
 
-`dbs/redisx` 基于 `github.com/redis/go-redis/v9` 封装 Redis 客户端。
+`datax/redisx` 基于 `github.com/redis/go-redis/v9` 封装 Redis 客户端。
 
 主要能力：
 
@@ -101,9 +109,9 @@
 - 提供基于 Redis 的分布式锁。
 - 分布式锁支持普通锁和自动续期锁，并通过 Lua 脚本保证释放锁时校验锁值。
 
-### dbs/kafkax
+### datax/kafkax
 
-`dbs/kafkax` 基于 `github.com/segmentio/kafka-go` 封装 Kafka 生产和消费。
+`datax/kafkax` 基于 `github.com/segmentio/kafka-go` 封装 Kafka 生产和消费。
 
 主要能力：
 
@@ -115,9 +123,9 @@
 - 支持单条消费和批量消费。
 - 提供默认客户端和自定义 Manager，便于在服务中集中管理多个 topic。
 
-### dbs/rabbitmqx
+### datax/rabbitmqx
 
-`dbs/rabbitmqx` 基于 `github.com/rabbitmq/amqp091-go` 封装 RabbitMQ 连接和消息收发。
+`datax/rabbitmqx` 基于 `github.com/rabbitmq/amqp091-go` 封装 RabbitMQ 连接和消息收发。
 
 主要能力：
 
@@ -129,9 +137,9 @@
 - 支持消费消息，并根据 handler 返回值执行 ack、nack 或 reject。
 - 提供默认客户端和自定义 Manager。
 
-### encryption
+### cryptox
 
-`encryption` 目录按算法拆分为多个子包，覆盖业务项目中常见的加密、签名、摘要、编码和令牌场景。
+`cryptox` 目录按算法拆分为多个子包，覆盖业务项目中常见的加密、签名、摘要、编码和令牌场景。
 
 主要能力：
 
@@ -176,9 +184,66 @@
 - `IP`: 客户端 IP 提取中间件，支持从指定 header 和 `RemoteAddr` 获取 IP。
 - `ClientIP`: 独立 IP 提取函数，可在非中间件场景复用。
 
-### response
+### replyx
 
-`response` 包当前保留为 HTTP 响应封装包位。现阶段只有包定义，后续可以继续补充统一成功响应、错误响应、分页响应等能力。
+`replyx` 包用于统一 API 响应结构、公共错误码和错误响应文案，并基于 go-zero `httpx.OkJson` 直接向客户端输出 JSON。响应字段固定为 `code`、`msg`、`data`。
+
+主要能力：
+
+- `0-99`: 公共保留错误码区间，其中 `0` 表示成功，`1-99` 表示常用错误。
+- `0`: 成功码，同样维护在内置 code map 中。
+- `RegisterCodes`: 注册业务项目自定义错误码，自定义 code 必须从 `100` 开始。
+- `Vars`: 失败 msg 变量，支持 `{name}` 形式的占位符替换。
+- 内置 `CodeInvalidParam` 默认文案包含 `{field}`，例如传入 `replyx.Vars{"field": "name"}` 后输出 `invalid param: name`。
+- `Success`: 输出成功响应，固定使用 `code=0`，支持可选 msg 变量。
+- `Fail`: 根据 code 输出失败响应，msg 从错误码表自动填充。
+- `FailStatus`: 根据 HTTP status 和 code 输出失败响应，msg 从错误码表自动填充。
+- `SuccessPage`: 输出分页成功响应。
+- `SuccessMsg`: 输出指定 code 的成功响应，并使用自定义 msg 覆盖 code map 中的默认 msg。
+
+### wsx
+
+`wsx` 包用于 WebSocket 会话和连接管理，适合在 go-zero REST handler 中接入升级后的长连接。
+
+主要能力：
+
+- `Manager`: 管理 WebSocket 会话创建、复用、关闭和遍历。
+- `Session`: 封装单个连接编码对应的 WebSocket 连接、读写通道和生命周期。
+- `Config`: 支持最大连接数、读写缓冲区、读写通道长度、超时时间、消息类型和来源校验配置。
+- 创建会话时显式传入连接编码 `code`，不绑定具体用户、设备或鉴权概念。
+- 支持同一连接编码热重连，替换连接时不会因为旧连接退出而关闭新会话。
+- 支持 `Get`、`CloseConn`、`Count`、`Range`、`Broadcast` 等常用管理能力。
+- 日志统一使用本库 `logs` 包输出。
+
+最小用法：
+
+```go
+manager := wsx.NewManager()
+session, isNew, err := manager.Create(w, r, code)
+```
+
+### taskx
+
+`taskx` 包用于管理基于 cron 表达式的定时任务。
+
+主要能力：
+
+- `Manager`: 管理定时任务注册、启动、停止和移除。
+- `Job`: 描述任务名称、cron 表达式、是否立即执行和执行函数。
+- 支持秒级 cron 表达式。
+- 支持指定调度时区。
+- 支持同名任务覆盖注册。
+
+最小用法：
+
+```go
+manager := taskx.NewManager(taskx.WithSeconds())
+_ = manager.AddFunc("refresh-cache", "*/30 * * * * *", func(ctx context.Context) {
+	// 执行业务逻辑
+})
+manager.Start()
+defer manager.Stop()
+```
 
 ## 安装
 
@@ -199,7 +264,7 @@ import (
 	"fmt"
 	"time"
 
-	"go-zero-core/encryption/jwtx"
+	"go-zero-core/cryptox/jwtx"
 )
 
 func main() {
@@ -229,7 +294,7 @@ func main() {
 ```go
 package main
 
-import "go-zero-core/dbs/mysqlx"
+import "go-zero-core/datax/mysqlx"
 
 func main() {
 	db := mysqlx.MustConnect(mysqlx.Config{
@@ -254,7 +319,7 @@ import (
 	"context"
 	"time"
 
-	"go-zero-core/dbs/redisx"
+	"go-zero-core/datax/redisx"
 )
 
 func main() {
@@ -270,7 +335,7 @@ func main() {
 	}
 	defer lock.Unlock(ctx)
 
-	// do something
+	// 执行业务逻辑
 }
 ```
 

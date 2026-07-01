@@ -44,7 +44,7 @@ func (l *GormLogger) Info(ctx context.Context, msg string, data ...interface{}) 
 		return
 	}
 	if l.Config.LogLevel >= gormlogger.Info {
-		Info(ctx, formatMessage(msg, data...), nil, nil)
+		Info(ctx, formatMessage(msg, data...), nil)
 	}
 }
 
@@ -87,7 +87,7 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 		Warn(ctx, fmt.Sprintf("slow sql >= %v", l.Config.SlowThreshold), gormBody(sql, rows, elapsed), nil)
 	case l.Config.LogLevel == gormlogger.Info:
 		sql, rows := fc()
-		Info(ctx, "gorm sql", gormBody(sql, rows, elapsed), nil)
+		Info(ctx, "gorm sql", gormBody(sql, rows, elapsed))
 	}
 }
 

@@ -20,15 +20,15 @@ func DebugContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
 	}
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Debug(BodyContent(content))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Debug(BodyContent(content))
 }
 
 // Info 输出 info 日志。
-func Info(ctx context.Context, msg string, content any, err any) {
+func Info(ctx context.Context, msg string, content any) {
 	if IsDisabled(ctx) {
 		return
 	}
-	InfoContent(ctx, Content{Msg: msg, Content: content, Error: err})
+	InfoContent(ctx, Content{Msg: msg, Content: content})
 }
 
 // InfoContent 输出 info 日志。
@@ -36,7 +36,7 @@ func InfoContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
 	}
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Info(BodyContent(content))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Info(BodyContent(content))
 }
 
 // Warn 输出 warn 日志。
@@ -52,7 +52,7 @@ func WarnContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
 	}
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Sloww(BodyContent(content), logx.Field("severity", "warn"))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Sloww(BodyContent(content), logx.Field("severity", "warn"))
 }
 
 // Error 输出 error 日志。
@@ -68,7 +68,7 @@ func ErrorContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
 	}
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Error(BodyContent(content))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Error(BodyContent(content))
 }
 
 // ErrorStack 输出带堆栈的 error 日志。
@@ -90,7 +90,7 @@ func ErrorStackContent(ctx context.Context, content Content) {
 		"stack": string(debug.Stack()),
 	}
 
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Error(BodyContent(body))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Error(BodyContent(body))
 }
 
 // Severe 输出 severe 日志。
@@ -106,5 +106,5 @@ func SevereContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
 	}
-	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(1).Errorw(BodyContent(content), logx.Field("severity", "severe"))
+	logx.WithContext(ContextWithTrace(ctx)).WithCallerSkip(2).Errorw(BodyContent(content), logx.Field("severity", "severe"))
 }
