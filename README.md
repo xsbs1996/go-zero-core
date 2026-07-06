@@ -20,23 +20,29 @@
 
 | go-zero-core | Go | go-zero | 说明 |
 | --- | --- | --- | --- |
-| v1.0.1 | 1.25+ | 1.10.1 | 当前版本。新增 `xcode` 统一错误码、`xpacket` 二进制封包；`xreply` 只保留统一响应能力。 |
+| v1.0.2 | 1.25+ | 1.10.1 | 当前版本。新增 `xauth/xjwt`、`xauth/xticket`，移除 `xcrypto/xjwt`；补充各模块单元测试；`xcode` 只内置 0-99 通用错误码，100 及以上由业务注册。 |
+| v1.0.1 | 1.25+ | 1.10.1 | 新增 `xcode` 统一错误码、`xpacket` 二进制封包；`xreply` 只保留统一响应能力。 |
 | v1.0.0 | 1.25+ | 1.10.1 | 初始发布版本，包含数据源、日志、中间件、响应、WebSocket、任务、加密和类型转换能力。 |
 
 ## 安装
 
 ```bash
-go get github.com/xsbs1996/go-zero-core@v1.0.1
+go get github.com/xsbs1996/go-zero-core@v1.0.2
 ```
 
 如果该仓库作为内部模块维护，请将业务项目中的 import path 替换为实际仓库地址。
+
+## 配置约定
+
+带有 `json` / `yaml` 标签的配置结构体默认面向 go-zero `conf.Load` / `conf.MustLoad` 使用。字段类型为 `time.Duration` 时，配置文件中应填写 duration 字符串，例如 `10s`、`500ms`、`1m`；不要填写裸数字。
 
 ## 模块总览
 
 ```text
 .
+├── xauth/             # 认证能力，包含 JWT 和短期一次性票据
 ├── xcast/             # 类型转换、JSON、时间、map/struct、指针工具
-├── xcrypto/           # 加密、摘要、签名、编码、JWT、UUID、随机值
+├── xcrypto/           # 加密、摘要、签名、编码、UUID、随机值
 ├── xdata/
 │   ├── xmysql/        # MySQL GORM 连接、全局实例、sharding
 │   ├── xpostgres/     # PostgreSQL GORM 连接、全局实例、sharding
@@ -361,7 +367,7 @@ if err != nil {
 
 ### JWT
 
-`xcrypto/xjwt` 用于生成、解析和刷新 JWT。业务 claims 放在 `Data` 中。
+`xauth/xjwt` 用于生成、解析和刷新 JWT。业务 claims 放在 `Data` 中。
 
 ```go
 conf := xjwt.Config{
@@ -382,6 +388,29 @@ if err != nil {
 }
 
 fmt.Println(claims.Data)
+```
+
+### Ticket
+
+`xauth/xticket` 用于创建和校验短期签名票据。它只负责票据生成、签名校验和过期校验；存储、删除、防重放等逻辑由业务层自行实现。
+
+```go
+conf := xticket.Config{
+	Secret: []byte("your-ticket-secret"),
+	Issuer: "order-service",
+	TTL:    10 * time.Minute,
+}
+
+ticket, err := xticket.Generate(conf, UserPayload{UserID: 1001, NickName: "alice"})
+if err != nil {
+	return err
+}
+
+claims, err := xticket.Verify[UserPayload](conf, ticket)
+if err != nil {
+	return err
+}
+_ = claims.Payload
 ```
 
 ### REST 中间件
@@ -537,7 +566,6 @@ defer manager.Stop()
 
 - `xaes`: AES-GCM、AES-CBC 加解密。
 - `xrsa`: RSA 密钥生成、PEM 编解码、OAEP 加解密、PSS 签名和验签。
-- `xjwt`: JWT 生成、解析、刷新。
 - `xbcrypt`: 密码哈希和校验。
 - `xhmac`: HMAC-SHA1、HMAC-SHA256、HMAC-SHA512 签名。
 - `xmd5`: 字符串、字节切片、文件 MD5。
@@ -545,6 +573,11 @@ defer manager.Stop()
 - `xbase64`: Base64、Base64URL、Base62、Base58。
 - `xuuid`: UUID 生成、解析、校验、去横线 UUID。
 - `xrand`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
+
+### `xauth`
+
+- `xjwt`: JWT 生成、解析、刷新。
+- `xticket`: 短期签名票据生成、解析、验签和过期校验；存储、删除、防重放由业务层实现。
 
 ### `xdata`
 

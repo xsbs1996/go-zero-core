@@ -31,48 +31,42 @@ const (
 )
 
 const (
-	CodeInsufficientBalance = 100 // CodeInsufficientBalance 表示账户余额不足。
-)
-
-const (
-	MsgSuccess             = "success"                // MsgSuccess 表示成功默认文案。
-	MsgError               = "error"                  // MsgError 表示通用失败默认文案。
-	MsgInvalidParam        = "invalid param: {field}" // MsgInvalidParam 表示参数错误默认文案，{field} 可替换为字段名。
-	MsgUnauthorized        = "unauthorized"           // MsgUnauthorized 表示未认证默认文案。
-	MsgForbidden           = "forbidden"              // MsgForbidden 表示无权限默认文案。
-	MsgNotFound            = "not found"              // MsgNotFound 表示资源不存在默认文案。
-	MsgConflict            = "conflict"               // MsgConflict 表示资源冲突默认文案。
-	MsgTooManyRequests     = "too many requests"      // MsgTooManyRequests 表示请求过于频繁默认文案。
-	MsgInvalidToken        = "invalid token"          // MsgInvalidToken 表示 token 无效默认文案。
-	MsgTokenExpired        = "token expired"          // MsgTokenExpired 表示 token 过期默认文案。
-	MsgInvalidSign         = "invalid sign"           // MsgInvalidSign 表示签名无效默认文案。
-	MsgTimeout             = "timeout"                // MsgTimeout 表示超时默认文案。
-	MsgServiceBusy         = "service busy"           // MsgServiceBusy 表示服务繁忙默认文案。
-	MsgServiceUnavailable  = "service unavailable"    // MsgServiceUnavailable 表示服务不可用默认文案。
-	MsgInternal            = "internal error"         // MsgInternal 表示内部错误默认文案。
-	MsgInsufficientBalance = "insufficient balance"   // MsgInsufficientBalance 表示余额不足默认文案。
-	msgUnknownCode         = "unknown error"
+	MsgSuccess            = "success"                // MsgSuccess 表示成功默认文案。
+	MsgError              = "error"                  // MsgError 表示通用失败默认文案。
+	MsgInvalidParam       = "invalid param: {field}" // MsgInvalidParam 表示参数错误默认文案，{field} 可替换为字段名。
+	MsgUnauthorized       = "unauthorized"           // MsgUnauthorized 表示未认证默认文案。
+	MsgForbidden          = "forbidden"              // MsgForbidden 表示无权限默认文案。
+	MsgNotFound           = "not found"              // MsgNotFound 表示资源不存在默认文案。
+	MsgConflict           = "conflict"               // MsgConflict 表示资源冲突默认文案。
+	MsgTooManyRequests    = "too many requests"      // MsgTooManyRequests 表示请求过于频繁默认文案。
+	MsgInvalidToken       = "invalid token"          // MsgInvalidToken 表示 token 无效默认文案。
+	MsgTokenExpired       = "token expired"          // MsgTokenExpired 表示 token 过期默认文案。
+	MsgInvalidSign        = "invalid sign"           // MsgInvalidSign 表示签名无效默认文案。
+	MsgTimeout            = "timeout"                // MsgTimeout 表示超时默认文案。
+	MsgServiceBusy        = "service busy"           // MsgServiceBusy 表示服务繁忙默认文案。
+	MsgServiceUnavailable = "service unavailable"    // MsgServiceUnavailable 表示服务不可用默认文案。
+	MsgInternal           = "internal error"         // MsgInternal 表示内部错误默认文案。
+	msgUnknownCode        = "unknown error"
 )
 
 var (
 	codeMu sync.RWMutex
 	codes  = map[int]string{
-		CodeSuccess:             MsgSuccess,
-		CodeError:               MsgError,
-		CodeInvalidParam:        MsgInvalidParam,
-		CodeUnauthorized:        MsgUnauthorized,
-		CodeForbidden:           MsgForbidden,
-		CodeNotFound:            MsgNotFound,
-		CodeConflict:            MsgConflict,
-		CodeTooManyRequests:     MsgTooManyRequests,
-		CodeInvalidToken:        MsgInvalidToken,
-		CodeTokenExpired:        MsgTokenExpired,
-		CodeInvalidSign:         MsgInvalidSign,
-		CodeTimeout:             MsgTimeout,
-		CodeServiceBusy:         MsgServiceBusy,
-		CodeServiceUnavailable:  MsgServiceUnavailable,
-		CodeInternal:            MsgInternal,
-		CodeInsufficientBalance: MsgInsufficientBalance,
+		CodeSuccess:            MsgSuccess,
+		CodeError:              MsgError,
+		CodeInvalidParam:       MsgInvalidParam,
+		CodeUnauthorized:       MsgUnauthorized,
+		CodeForbidden:          MsgForbidden,
+		CodeNotFound:           MsgNotFound,
+		CodeConflict:           MsgConflict,
+		CodeTooManyRequests:    MsgTooManyRequests,
+		CodeInvalidToken:       MsgInvalidToken,
+		CodeTokenExpired:       MsgTokenExpired,
+		CodeInvalidSign:        MsgInvalidSign,
+		CodeTimeout:            MsgTimeout,
+		CodeServiceBusy:        MsgServiceBusy,
+		CodeServiceUnavailable: MsgServiceUnavailable,
+		CodeInternal:           MsgInternal,
 	}
 )
 

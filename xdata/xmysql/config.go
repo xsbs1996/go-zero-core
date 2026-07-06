@@ -35,9 +35,9 @@ type Config struct {
 	Charset                string        `json:"charset,default=utf8mb4" yaml:"charset"`                        // Charset 连接字符集。
 	ParseTime              bool          `json:"parseTime,optional" yaml:"parseTime"`                           // ParseTime 是否将 DATE/DATETIME 自动解析为 time.Time。
 	Loc                    string        `json:"loc,default=Local" yaml:"loc"`                                  // Loc 时间时区，例如 Local、Asia/Shanghai。
-	Timeout                time.Duration `json:"timeout,default=10s" yaml:"timeout"`                            // Timeout 建立连接超时时间。
-	ReadTimeout            time.Duration `json:"readTimeout,default=30s" yaml:"readTimeout"`                    // ReadTimeout 读取超时时间。
-	WriteTimeout           time.Duration `json:"writeTimeout,default=30s" yaml:"writeTimeout"`                  // WriteTimeout 写入超时时间。
+	Timeout                time.Duration `json:"timeout,default=10s" yaml:"timeout"`                            // Timeout 建立连接超时时间，配置值示例：10s。
+	ReadTimeout            time.Duration `json:"readTimeout,default=30s" yaml:"readTimeout"`                    // ReadTimeout 读取超时时间，配置值示例：30s。
+	WriteTimeout           time.Duration `json:"writeTimeout,default=30s" yaml:"writeTimeout"`                  // WriteTimeout 写入超时时间，配置值示例：30s。
 	MaxIdleConns           int           `json:"maxIdleConns,optional" yaml:"maxIdleConns"`                     // MaxIdleConns 最大空闲连接数。
 	MaxOpenConns           int           `json:"maxOpenConns,optional" yaml:"maxOpenConns"`                     // MaxOpenConns 最大打开连接数。
 	ConnMaxLifetime        int           `json:"connMaxLifetime,optional" yaml:"connMaxLifetime"`               // ConnMaxLifetime 连接最大生命周期，单位分钟。

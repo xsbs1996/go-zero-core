@@ -12,6 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+// TestValidateLength 验证二进制封包长度校验。
 func TestValidateLength(t *testing.T) {
 	t.Parallel()
 
@@ -26,6 +27,7 @@ func TestValidateLength(t *testing.T) {
 	}
 }
 
+// TestEncodeDecodeBody 验证通用 body 封包和解包。
 func TestEncodeDecodeBody(t *testing.T) {
 	t.Parallel()
 
@@ -57,6 +59,7 @@ func (v *businessStringValue) ValidateBusinessProto() error {
 	return nil
 }
 
+// TestEncodeDecodeProto 验证 protobuf 载荷封包、解包和 action 解析。
 func TestEncodeDecodeProto(t *testing.T) {
 	t.Parallel()
 
@@ -75,6 +78,7 @@ func TestEncodeDecodeProto(t *testing.T) {
 	}
 }
 
+// TestDecodeProtoCallsProtoBusinessValidator 验证 protobuf 业务校验接口会被调用。
 func TestDecodeProtoCallsProtoBusinessValidator(t *testing.T) {
 	t.Parallel()
 
@@ -108,6 +112,7 @@ func (u *businessJsonUser) ValidateBusinessJson() error {
 	return nil
 }
 
+// TestEncodeDecodeJson 验证 JSON 载荷封包和解包。
 func TestEncodeDecodeJson(t *testing.T) {
 	t.Parallel()
 
@@ -126,6 +131,7 @@ func TestEncodeDecodeJson(t *testing.T) {
 	}
 }
 
+// TestDecodeJsonCallsJsonBusinessValidator 验证 JSON 业务校验接口会被调用。
 func TestDecodeJsonCallsJsonBusinessValidator(t *testing.T) {
 	t.Parallel()
 
@@ -141,6 +147,7 @@ func TestDecodeJsonCallsJsonBusinessValidator(t *testing.T) {
 	}
 }
 
+// TestEncodeDecodeJsonResult 验证 JSON 统一响应结构的封包和解包。
 func TestEncodeDecodeJsonResult(t *testing.T) {
 	t.Parallel()
 

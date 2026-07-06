@@ -24,9 +24,9 @@ type Config struct {
 	DB           int           `json:"db,optional" yaml:"db"`                       // DB Redis 数据库编号。
 	PoolSize     int           `json:"poolSize,default=10" yaml:"poolSize"`         // PoolSize 连接池大小。
 	MinIdleConns int           `json:"minIdleConns,optional" yaml:"minIdleConns"`   // MinIdleConns 最小空闲连接数。
-	DialTimeout  time.Duration `json:"dialTimeout,default=5s" yaml:"dialTimeout"`   // DialTimeout 建立连接超时时间。
-	ReadTimeout  time.Duration `json:"readTimeout,default=3s" yaml:"readTimeout"`   // ReadTimeout 读取超时时间。
-	WriteTimeout time.Duration `json:"writeTimeout,default=3s" yaml:"writeTimeout"` // WriteTimeout 写入超时时间。
+	DialTimeout  time.Duration `json:"dialTimeout,default=5s" yaml:"dialTimeout"`   // DialTimeout 建立连接超时时间，配置值示例：5s。
+	ReadTimeout  time.Duration `json:"readTimeout,default=3s" yaml:"readTimeout"`   // ReadTimeout 读取超时时间，配置值示例：3s。
+	WriteTimeout time.Duration `json:"writeTimeout,default=3s" yaml:"writeTimeout"` // WriteTimeout 写入超时时间，配置值示例：3s。
 }
 
 // WithDefault 返回补齐默认值后的配置。

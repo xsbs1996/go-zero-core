@@ -25,9 +25,9 @@ var (
 type Config struct {
 	Brokers             []string           `json:"brokers" yaml:"brokers"`                                      // Brokers Kafka broker 地址列表。
 	ClientID            string             `json:"clientId,optional" yaml:"clientId"`                           // ClientID Kafka 客户端 ID。
-	DialTimeout         time.Duration      `json:"dialTimeout,default=10s" yaml:"dialTimeout"`                  // DialTimeout 建立连接超时时间，单位由 time.Duration 决定。
-	ReadTimeout         time.Duration      `json:"readTimeout,default=10s" yaml:"readTimeout"`                  // ReadTimeout 读取超时时间，单位由 time.Duration 决定。
-	WriteTimeout        time.Duration      `json:"writeTimeout,default=10s" yaml:"writeTimeout"`                // WriteTimeout 写入超时时间，单位由 time.Duration 决定。
+	DialTimeout         time.Duration      `json:"dialTimeout,default=10s" yaml:"dialTimeout"`                  // DialTimeout 建立连接超时时间，配置值示例：10s。
+	ReadTimeout         time.Duration      `json:"readTimeout,default=10s" yaml:"readTimeout"`                  // ReadTimeout 读取超时时间，配置值示例：10s。
+	WriteTimeout        time.Duration      `json:"writeTimeout,default=10s" yaml:"writeTimeout"`                // WriteTimeout 写入超时时间，配置值示例：10s。
 	BatchSize           int                `json:"batchSize,default=100" yaml:"batchSize"`                      // BatchSize 生产者批量发送大小。
 	BatchTimeout        int                `json:"batchTimeout,default=1000" yaml:"batchTimeout"`               // BatchTimeout 生产者批量发送等待时间，单位毫秒。
 	ConsumeBatchSize    int                `json:"consumeBatchSize,default=100" yaml:"consumeBatchSize"`        // ConsumeBatchSize 批量消费上限，达到后立即触发 handler。

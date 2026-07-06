@@ -31,10 +31,10 @@ type Config struct {
 	Username       string        `json:"username,optional" yaml:"username"`             // Username RabbitMQ 用户名。
 	Password       string        `json:"password,optional" yaml:"password"`             // Password RabbitMQ 密码。
 	VHost          string        `json:"vHost,default=/" yaml:"vHost"`                  // VHost RabbitMQ 虚拟主机。
-	Heartbeat      time.Duration `json:"heartbeat,default=10s" yaml:"heartbeat"`        // Heartbeat 心跳间隔。
+	Heartbeat      time.Duration `json:"heartbeat,default=10s" yaml:"heartbeat"`        // Heartbeat 心跳间隔，配置值示例：10s。
 	Locale         string        `json:"locale,default=en_US" yaml:"locale"`            // Locale AMQP locale 配置。
 	ConnectionName string        `json:"connectionName,optional" yaml:"connectionName"` // ConnectionName RabbitMQ 连接名称。
-	DialTimeout    time.Duration `json:"dialTimeout,default=10s" yaml:"dialTimeout"`    // DialTimeout 建立连接超时时间。
+	DialTimeout    time.Duration `json:"dialTimeout,default=10s" yaml:"dialTimeout"`    // DialTimeout 建立连接超时时间，配置值示例：10s。
 	ChannelMax     int           `json:"channelMax,optional" yaml:"channelMax"`         // ChannelMax 最大 channel 数。
 	FrameSize      int           `json:"frameSize,optional" yaml:"frameSize"`           // FrameSize AMQP frame 大小。
 	TLS            bool          `json:"tls,optional" yaml:"tls"`                       // TLS 是否使用 amqps 协议。

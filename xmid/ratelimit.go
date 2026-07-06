@@ -17,7 +17,7 @@ type RateLimitExceededFunc func(w http.ResponseWriter, r *http.Request)
 // RateLimitConfig 限流中间件配置。
 type RateLimitConfig struct {
 	Limit     int                   `json:"limit,default=100" yaml:"limit"`      // Limit 时间窗口内允许的最大请求数。
-	Window    time.Duration         `json:"window,default=1m" yaml:"window"`     // Window 限流时间窗口。
+	Window    time.Duration         `json:"window,default=1m" yaml:"window"`     // Window 限流时间窗口，配置值示例：1m。
 	KeyFunc   RateLimitKeyFunc      `json:"-" yaml:"-"`                          // KeyFunc 限流键生成函数。
 	Exceeded  RateLimitExceededFunc `json:"-" yaml:"-"`                          // Exceeded 限流响应函数。
 	Headers   []string              `json:"headers,optional" yaml:"headers"`     // Headers 解析客户端 IP 的请求头。

@@ -34,9 +34,9 @@ type Config struct {
 	Database               string        `json:"database,optional" yaml:"database"`                             // Database PostgreSQL 数据库名，兼容旧字段，优先使用 DBName。
 	SSLMode                string        `json:"sslMode,default=disable" yaml:"sslMode"`                        // SSLMode SSL 模式，例如 disable、require、verify-full。
 	TimeZone               string        `json:"timeZone,optional" yaml:"timeZone"`                             // TimeZone 连接时区，例如 Asia/Shanghai。
-	ConnectTimeout         time.Duration `json:"connectTimeout,default=10s" yaml:"connectTimeout"`              // ConnectTimeout 建立连接超时时间。
-	ReadTimeout            time.Duration `json:"readTimeout,default=30s" yaml:"readTimeout"`                    // ReadTimeout 读取超时时间。
-	WriteTimeout           time.Duration `json:"writeTimeout,default=30s" yaml:"writeTimeout"`                  // WriteTimeout 写入超时时间。
+	ConnectTimeout         time.Duration `json:"connectTimeout,default=10s" yaml:"connectTimeout"`              // ConnectTimeout 建立连接超时时间，配置值示例：10s。
+	ReadTimeout            time.Duration `json:"readTimeout,default=30s" yaml:"readTimeout"`                    // ReadTimeout 读取超时时间，配置值示例：30s。
+	WriteTimeout           time.Duration `json:"writeTimeout,default=30s" yaml:"writeTimeout"`                  // WriteTimeout 写入超时时间，配置值示例：30s。
 	MaxIdleConns           int           `json:"maxIdleConns,optional" yaml:"maxIdleConns"`                     // MaxIdleConns 最大空闲连接数。
 	MaxOpenConns           int           `json:"maxOpenConns,optional" yaml:"maxOpenConns"`                     // MaxOpenConns 最大打开连接数。
 	ConnMaxLifetime        int           `json:"connMaxLifetime,optional" yaml:"connMaxLifetime"`               // ConnMaxLifetime 连接最大生命周期，单位分钟。
