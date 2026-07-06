@@ -1,4 +1,4 @@
-module go-zero-core
+module github.com/xsbs1996/go-zero-core
 
 go 1.25.0
 

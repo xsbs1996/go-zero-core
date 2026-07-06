@@ -2,7 +2,7 @@
 
 `go-zero-core` 是面向 go-zero 服务的 Go 基础能力库。它不替代 go-zero、GORM、go-redis、kafka-go 或 RabbitMQ 客户端，而是在这些库之上沉淀微服务项目中常见的初始化、连接管理、中间件、统一响应、日志、加密和类型转换能力。
 
-当前模块名为 `go-zero-core`，要求 Go `1.25+`。
+当前模块名为 `github.com/xsbs1996/go-zero-core`，要求 Go `1.25+`。
 
 ## 适用范围
 
@@ -25,7 +25,7 @@
 ## 安装
 
 ```bash
-go get go-zero-core
+go get github.com/xsbs1996/go-zero-core
 ```
 
 如果该仓库作为内部模块维护，请将业务项目中的 import path 替换为实际仓库地址。
@@ -58,7 +58,7 @@ go get go-zero-core
 ```go
 package main
 
-import "go-zero-core/xdata/xmysql"
+import "github.com/xsbs1996/go-zero-core/xdata/xmysql"
 
 func main() {
 	db := xmysql.MustConnect(xmysql.Config{

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"go-zero-core/xlog"
+	"github.com/xsbs1996/go-zero-core/xlog"
 
 	gormmysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"

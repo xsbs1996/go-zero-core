@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"go-zero-core/xlog"
+	"github.com/xsbs1996/go-zero-core/xlog"
 
 	"github.com/robfig/cron/v3"
 )

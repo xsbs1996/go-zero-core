@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"go-zero-core/xcast"
+	"github.com/xsbs1996/go-zero-core/xcast"
 
 	"github.com/zeromicro/go-zero/rest"
 )

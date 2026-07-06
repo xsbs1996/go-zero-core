@@ -6,7 +6,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"go-zero-core/xlog"
+	"github.com/xsbs1996/go-zero-core/xlog"
 
 	"github.com/gorilla/websocket"
 )
