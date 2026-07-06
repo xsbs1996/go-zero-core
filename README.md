@@ -18,14 +18,15 @@
 
 ## 版本兼容
 
-| go-zero-core | Go | go-zero |
-| --- | --- | --- |
-| v1.0.x | 1.25+ | 1.10.1 |
+| go-zero-core | Go | go-zero | 说明 |
+| --- | --- | --- | --- |
+| v1.0.1 | 1.25+ | 1.10.1 | 当前版本。新增 `xcode` 统一错误码、`xpacket` 二进制封包；`xreply` 只保留统一响应能力。 |
+| v1.0.0 | 1.25+ | 1.10.1 | 初始发布版本，包含数据源、日志、中间件、响应、WebSocket、任务、加密和类型转换能力。 |
 
 ## 安装
 
 ```bash
-go get github.com/xsbs1996/go-zero-core
+go get github.com/xsbs1996/go-zero-core@v1.0.1
 ```
 
 如果该仓库作为内部模块维护，请将业务项目中的 import path 替换为实际仓库地址。
@@ -44,7 +45,9 @@ go get github.com/xsbs1996/go-zero-core
 │   └── xrabbitmq/     # RabbitMQ 连接、声明、生产、消费、manager
 ├── xlog/              # go-zero logx 配置、结构化日志、GORM logger
 ├── xmid/              # go-zero REST 中间件
-├── xreply/            # 统一 API 响应和业务错误码
+├── xcode/             # 统一业务错误码、默认文案和错误码注册
+├── xpacket/           # action + bodyLen + body 二进制封包和 protobuf 载荷编解码
+├── xreply/            # 统一 API 响应
 ├── xtask/             # cron 定时任务管理
 └── xws/               # WebSocket 会话管理
 ```
@@ -406,7 +409,7 @@ server.Use(xmid.Auth(xmid.AuthConfig{
 ```go
 authInfo, ok := xmid.AuthInfo(r.Context())
 if !ok {
-	xreply.FailStatus(w, http.StatusUnauthorized, xreply.CodeUnauthorized)
+	xreply.FailStatus(w, http.StatusUnauthorized, xcode.CodeUnauthorized)
 	return
 }
 _ = authInfo
@@ -437,20 +440,22 @@ _ = authInfo
 ```go
 xreply.Success(w, user)
 xreply.SuccessPage(w, users, total, page, pageSize)
-xreply.Fail(w, xreply.CodeInvalidParam, xreply.Vars{"field": "name"})
-xreply.FailStatus(w, http.StatusUnauthorized, xreply.CodeUnauthorized)
+xreply.Fail(w, xcode.CodeInvalidParam, xcode.Vars{"field": "name"})
+xreply.FailStatus(w, http.StatusUnauthorized, xcode.CodeUnauthorized)
 ```
 
 错误码约定：
 
 - `0`: 成功。
-- `1-99`: 公共错误码，由 `xreply` 保留。
-- `100+`: 业务项目自定义错误码，可通过 `RegisterCodes` 注册。
+- `1-99`: 公共错误码，由 `xcode` 统一维护，`xreply` 复用。
+- `100+`: 业务项目自定义错误码，可通过 `xcode.RegisterCodes` 注册。
 
 ```go
+import "github.com/xsbs1996/go-zero-core/xcode"
+
 const CodeOrderNotFound = 10001
 
-xreply.RegisterCodes(map[int]string{
+xcode.RegisterCodes(map[int]string{
 	CodeOrderNotFound: "order not found",
 })
 ```
@@ -572,7 +577,22 @@ defer manager.Stop()
 - `SuccessMsg`: 自定义成功消息。
 - `Fail`: 业务失败响应，HTTP 状态码为 200。
 - `FailStatus`: 指定 HTTP 状态码的失败响应。
-- `RegisterCodes`: 注册业务错误码。
+
+### `xcode`
+
+- `Code*`: HTTP、二进制协议等传输层可复用的统一业务错误码。
+- `Msg`: 根据错误码和变量渲染默认文案。
+- `RegisterCodes`: 注册业务项目自定义错误码。
+
+### `xpacket`
+
+- `EncodeBody`、`DecodeBody`: 编码和解码默认二进制封包格式。
+- `EncodeProto`、`DecodeProto`: 基于 protobuf 载荷的封包和解包。
+- `EncodeJson`、`DecodeJson`: 基于 JSON 载荷的封包和解包。
+- `EncodeJsonResult`、`DecodeJsonResult`: 基于 `xreply` 统一响应结构的 JSON 封包和解包，错误码和文案由 `xcode` 管理。
+- `JsonBusinessValidator`、`ProtoBusinessValidator`: JSON 和 protobuf 载荷业务校验扩展点。
+- `GetAction`: 从合法二进制包中读取 action。
+- `ValidateLength`: 校验头部 bodyLen 与实际包长是否一致。
 
 ### `xws`
 
