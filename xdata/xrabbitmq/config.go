@@ -41,6 +41,9 @@ type Config struct {
 }
 
 // WithDefault 返回补齐默认值后的配置。
+//
+// 返回值：
+//   - Config: 已补齐虚拟主机、locale、心跳和连接超时默认值的 RabbitMQ 配置。
 func (c Config) WithDefault() Config {
 	if c.VHost == "" {
 		c.VHost = defaultVHost
@@ -58,6 +61,9 @@ func (c Config) WithDefault() Config {
 }
 
 // Validate 校验 RabbitMQ 连接配置。
+//
+// 返回值：
+//   - error: 配置合法返回 nil；缺少地址或用户名时返回错误。配置 URL 时跳过拆分字段校验。
 func (c Config) Validate() error {
 	if c.URL != "" {
 		return nil
@@ -72,6 +78,9 @@ func (c Config) Validate() error {
 }
 
 // DSN 根据配置生成 RabbitMQ 连接地址。
+//
+// 返回值：
+//   - string: RabbitMQ AMQP/AMQPS 连接地址；URL 非空时直接返回 URL。
 func (c Config) DSN() string {
 	if c.URL != "" {
 		return c.URL
@@ -97,6 +106,9 @@ func (c Config) DSN() string {
 }
 
 // AMQPConfig 根据配置生成 RabbitMQ 原生连接配置。
+//
+// 返回值：
+//   - amqp.Config: RabbitMQ 原生连接配置。
 func (c Config) AMQPConfig() amqp.Config {
 	c = c.WithDefault()
 

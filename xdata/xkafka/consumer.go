@@ -31,6 +31,16 @@ func readerConfig(conf Config, topic, group string) *kafka.ReaderConfig {
 }
 
 // NewConsumer 根据 topic、group 和配置创建 Kafka 消费者。
+//
+// 参数：
+//   - topic: Kafka topic。
+//   - group: Kafka consumer group。
+//   - conf: Kafka 连接配置。
+//   - opts: 可选消费者配置，例如 WithReaderConfig、WithoutConsumerPing。
+//
+// 返回值：
+//   - *kafka.Reader: Kafka 消费者。
+//   - error: 配置非法、topic/group 为空或 ping 失败时返回错误。
 func NewConsumer(topic, group string, conf Config, opts ...ConsumerOption) (*kafka.Reader, error) {
 	if err := conf.ValidateConsumer(); err != nil {
 		return nil, err
@@ -51,6 +61,15 @@ func NewConsumer(topic, group string, conf Config, opts ...ConsumerOption) (*kaf
 }
 
 // MustNewConsumer 根据 topic、group 和配置创建 Kafka 消费者，失败时直接 panic。
+//
+// 参数：
+//   - topic: Kafka topic。
+//   - group: Kafka consumer group。
+//   - conf: Kafka 连接配置。
+//   - opts: 可选消费者配置。
+//
+// 返回值：
+//   - *kafka.Reader: Kafka 消费者。
 func MustNewConsumer(topic, group string, conf Config, opts ...ConsumerOption) *kafka.Reader {
 	reader, err := NewConsumer(topic, group, conf, opts...)
 	if err != nil {

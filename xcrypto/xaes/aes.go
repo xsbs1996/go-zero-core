@@ -16,6 +16,14 @@ var (
 )
 
 // EncryptGCM 使用 AES-GCM 加密，返回 base64 编码密文。
+//
+// 参数：
+//   - plainText: 待加密明文。
+//   - key: AES 密钥，长度必须为 16、24 或 32 字节。
+//
+// 返回值：
+//   - string: base64 编码后的密文，内容包含 nonce 和密文。
+//   - error: 密钥非法或随机数生成失败时返回错误。
 func EncryptGCM(plainText []byte, key []byte) (string, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -37,6 +45,14 @@ func EncryptGCM(plainText []byte, key []byte) (string, error) {
 }
 
 // DecryptGCM 使用 AES-GCM 解密 base64 编码密文。
+//
+// 参数：
+//   - cipherText: EncryptGCM 生成的 base64 编码密文。
+//   - key: AES 密钥，长度必须为 16、24 或 32 字节。
+//
+// 返回值：
+//   - []byte: 解密后的明文。
+//   - error: base64 解码、密钥校验或认证解密失败时返回错误。
 func DecryptGCM(cipherText string, key []byte) ([]byte, error) {
 	data, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {
@@ -62,6 +78,15 @@ func DecryptGCM(cipherText string, key []byte) ([]byte, error) {
 }
 
 // EncryptCBC 使用 AES-CBC 和 PKCS7 填充加密，返回 base64 编码密文。
+//
+// 参数：
+//   - plainText: 待加密明文。
+//   - key: AES 密钥，长度必须为 16、24 或 32 字节。
+//   - iv: CBC 初始向量，长度必须等于 AES 块大小 16 字节。
+//
+// 返回值：
+//   - string: base64 编码后的密文。
+//   - error: 密钥或 IV 非法时返回错误。
 func EncryptCBC(plainText []byte, key []byte, iv []byte) (string, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -78,6 +103,15 @@ func EncryptCBC(plainText []byte, key []byte, iv []byte) (string, error) {
 }
 
 // DecryptCBC 使用 AES-CBC 和 PKCS7 填充解密 base64 编码密文。
+//
+// 参数：
+//   - cipherText: EncryptCBC 生成的 base64 编码密文。
+//   - key: AES 密钥，长度必须为 16、24 或 32 字节。
+//   - iv: CBC 初始向量，长度必须等于 AES 块大小 16 字节。
+//
+// 返回值：
+//   - []byte: 解密并移除 PKCS7 填充后的明文。
+//   - error: base64 解码、密钥校验、IV 校验或填充校验失败时返回错误。
 func DecryptCBC(cipherText string, key []byte, iv []byte) ([]byte, error) {
 	data, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {

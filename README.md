@@ -11,8 +11,8 @@
 - 多个 go-zero REST 服务需要统一鉴权、CORS、限流、客户端 IP 提取和响应结构。
 - 服务需要以一致方式接入 MySQL、PostgreSQL、Redis、Kafka、RabbitMQ。
 - 项目需要复用 GORM 日志适配、trace 上下文、结构化日志输出。
-- 业务代码中存在大量类型转换、JSON 序列化、时间戳转换、指针取值等重复逻辑。
-- 服务需要 JWT、BCrypt、AES、RSA、HMAC、MD5、SHA、UUID、随机值等常用工具。
+- 业务代码中存在大量类型转换、JSON 序列化、时间戳转换、指针取值、数值计算等重复逻辑。
+- 服务需要 JWT、BCrypt、AES、RSA、HMAC、MD5、SHA、UUID、随机值、随机抽取等常用工具。
 - 需要 WebSocket 会话管理、连接复用、广播和重连能力，并在业务端按需扩展鉴权、分组、跨实例广播等能力。
 - 需要基于 cron 的任务注册、调度和生命周期管理，并在业务端按需扩展持久化、失败重试、分布式调度等能力。
 
@@ -20,7 +20,8 @@
 
 | go-zero-core | Go | go-zero | 说明 |
 | --- | --- | --- | --- |
-| v1.0.2 | 1.25+ | 1.10.1 | 当前版本。新增 `xauth/xjwt`、`xauth/xticket`，移除 `xcrypto/xjwt`；补充各模块单元测试；`xcode` 只内置 0-99 通用错误码，100 及以上由业务注册。 |
+| 开发中 | 1.25+ | 1.10.1 | 未发布。当前工作区新增 `xmath`、顶层 `xrand`，随机工具从 `xcrypto/xrand` 迁移到顶层 `xrand` 并删除旧路径；补充 `xcast` 列表/`uint64` 转换、`xws` 用户 ID 会话便捷方法等能力。 |
+| v1.0.2 | 1.25+ | 1.10.1 | 新增 `xauth/xjwt`、`xauth/xticket`，移除 `xcrypto/xjwt`；补充各模块单元测试；`xcode` 只内置 0-99 通用错误码，100 及以上由业务注册。 |
 | v1.0.1 | 1.25+ | 1.10.1 | 新增 `xcode` 统一错误码、`xpacket` 二进制封包；`xreply` 只保留统一响应能力。 |
 | v1.0.0 | 1.25+ | 1.10.1 | 初始发布版本，包含数据源、日志、中间件、响应、WebSocket、任务、加密和类型转换能力。 |
 
@@ -42,7 +43,9 @@ go get github.com/xsbs1996/go-zero-core@v1.0.2
 .
 ├── xauth/             # 认证能力，包含 JWT 和短期一次性票据
 ├── xcast/             # 类型转换、JSON、时间、map/struct、指针工具
-├── xcrypto/           # 加密、摘要、签名、编码、UUID、随机值
+├── xcrypto/           # 加密、摘要、签名、编码、UUID
+├── xmath/             # 数值比较、取整、范围限制、求和、平均值、比例计算
+├── xrand/             # 加密安全随机、随机范围、随机抽取、洗牌、概率命中、权重随机
 ├── xdata/
 │   ├── xmysql/        # MySQL GORM 连接、全局实例、sharding
 │   ├── xpostgres/     # PostgreSQL GORM 连接、全局实例、sharding
@@ -491,7 +494,7 @@ xcode.RegisterCodes(map[int]string{
 
 ### WebSocket
 
-`xws` 封装 WebSocket 升级、会话存储、读写通道、广播和同 code 热重连。`code` 是业务传入的连接标识，库本身不绑定用户、设备或权限模型。
+`xws` 封装 WebSocket 升级、会话存储、读写通道、广播和同 code 热重连。`code` 是业务传入的连接标识，库本身不绑定用户、设备或权限模型。常见的一人一连接场景可以使用 `CreateUser`，它会把 `int64 userID` 转换为 `user:<id>` 格式的 code。
 
 ```go
 manager := xws.NewManager(xws.Config{
@@ -517,11 +520,31 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+如果连接标识就是用户 ID，可以直接使用用户 ID 便捷方法：
+
+```go
+func userWsHandler(w http.ResponseWriter, r *http.Request) {
+	userID := int64(1001)
+	session, isNew, err := manager.CreateUser(w, r, userID)
+	if err != nil {
+		return
+	}
+
+	_ = session
+	_ = isNew
+}
+```
+
 常用方法：
 
 - `Create(w, r, code)`: 创建或复用指定 code 的会话。
+- `CreateUser(w, r, userID)`: 按 `int64` 用户 ID 创建或复用会话，内部 code 为 `user:<id>`。
 - `Get(code)`: 获取会话。
+- `GetUser(userID)`: 按用户 ID 获取会话。
 - `CloseConn(code)`: 关闭指定会话。
+- `CloseUserConn(userID)`: 按用户 ID 关闭会话。
+- `UserCode(userID)`: 将用户 ID 转换为 `user:<id>` 会话编码。
+- `UserID(session)`: 从会话 code 解析用户 ID，支持 `user:<id>` 和纯数字 code。
 - `Count()`: 当前在线会话数。
 - `Range(fn)`: 遍历会话快照。
 - `Broadcast(msg)`: 向所有在线会话写入消息。
@@ -551,16 +574,67 @@ defer manager.Stop()
 - 同名任务重复注册时，新任务会替换旧任务。
 - `Stop()` 会停止调度器，并等待已经运行中的任务退出。
 
+### 数学与随机
+
+`xmath` 提供常见数值工具，覆盖最小值、最大值、绝对值、范围限制、范围判断、取整、求和、平均值、百分比和比值计算。
+
+```go
+limit := xmath.ClampInt(pageSize, 1, 100)
+price := xmath.RoundFloat64(19.995, 2)
+percent, ok := xmath.Percent(25, 200)
+
+_ = limit
+_ = price
+_ = ok
+_ = percent
+```
+
+`xrand` 统一提供随机工具，包括加密安全随机字节/字符串、闭区间随机数、随机布尔值、随机抽取、去重抽取、洗牌、概率命中和权重随机。
+
+```go
+token, err := xrand.Mixed(32)
+delay := xrand.RangeInt(1, 5)
+hit := xrand.ChancePercent(10)
+user, ok := xrand.WeightedPick([]string{"free", "vip"}, []int{80, 20})
+
+_ = token
+_ = err
+_ = delay
+_ = hit
+_ = user
+_ = ok
+```
+
 ## 包级 API 速查
 
 ### `xcast`
 
 - 字符串、整数、无符号整数、浮点数、布尔值互转。
-- `any` 转字符串、整数、`int64`、`float64`、布尔值，并提供默认值版本。
+- `any` 转字符串、整数、`int64`、`uint64`、`float64`、布尔值，并提供默认值版本。
 - `time.Time` 与 Unix 秒、毫秒时间戳互转。
 - JSON marshal、unmarshal、格式化输出。
 - struct 与 map 转换。
 - 泛型指针工具：创建指针、取值、默认值。
+- `int64` 列表工具：JSON 数组字符串、逗号分隔字符串解析，过滤非正数、去重并升序排序。
+
+### `xmath`
+
+- `Min*`、`Max*`、`Abs*`: 数值比较和绝对值。
+- `Clamp*`、`InRange*`: 闭区间限制和范围判断。
+- `RoundFloat64`、`FloorFloat64`、`CeilFloat64`、`TruncFloat64`: 指定精度取整。
+- `Sum*`、`Avg*`: 求和和平均值。
+- `Percent`、`Ratio`: 百分比和比值计算。
+
+### `xrand`
+
+- `Bytes`、`Hex`: 加密安全随机字节和十六进制字符串。
+- `String`、`Number`、`Alpha`、`Mixed`: 基于指定字符集或内置字符集的加密安全随机字符串。
+- `RangeInt`、`RangeInt64`: 闭区间随机整数。
+- `RangeFloat64`: 半开区间随机浮点数。
+- `Bool`、`Chance`、`ChancePercent`: 随机布尔值和概率命中。
+- `Pick`、`PickOne`、`PickUnique`: 随机抽取。
+- `Shuffle`、`ShuffleInPlace`、`Permutation`: 随机排列和洗牌。
+- `WeightedIndex`、`WeightedPick`: 权重随机。
 
 ### `xcrypto`
 
@@ -572,7 +646,6 @@ defer manager.Stop()
 - `xsha`: SHA1、SHA256、SHA384、SHA512。
 - `xbase64`: Base64、Base64URL、Base62、Base58。
 - `xuuid`: UUID 生成、解析、校验、去横线 UUID。
-- `xrand`: 随机字节、十六进制字符串、数字字符串、字母字符串、混合字符串。
 
 ### `xauth`
 

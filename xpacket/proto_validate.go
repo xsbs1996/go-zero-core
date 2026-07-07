@@ -16,6 +16,9 @@ var (
 
 // SetProtoValidator 替换包级 protobuf 结构校验器。
 //
+// 参数：
+//   - v: protovalidate 校验器；传 nil 表示关闭 protobuf 结构校验。
+//
 // 通常在服务启动阶段调用；传入 nil 表示关闭 protovalidate 结构校验，只保留
 // protobuf 反序列化和 ProtoBusinessValidator 业务校验。
 func SetProtoValidator(v protovalidate.Validator) {

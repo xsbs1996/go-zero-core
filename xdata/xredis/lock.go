@@ -61,6 +61,10 @@ type Lock struct {
 // client Redis 客户端。
 // key 锁 key，建议使用业务前缀，例如 lock:order:1。
 // ttl 锁过期时间，必须大于 0。
+//
+// 返回值：
+//   - *Lock: 获取成功的锁对象。
+//   - error: 参数非法、锁已被占用或 Redis 操作失败时返回错误。
 func AcquireLock(ctx context.Context, client *redis.Client, key string, ttl time.Duration) (*Lock, error) {
 	return acquireLock(ctx, client, key, ttl, 0)
 }
@@ -70,6 +74,10 @@ func AcquireLock(ctx context.Context, client *redis.Client, key string, ttl time
 // ctx 控制本次获取锁请求的生命周期。
 // key 锁 key，建议使用业务前缀，例如 lock:order:1。
 // ttl 锁过期时间，必须大于 0。
+//
+// 返回值：
+//   - *Lock: 获取成功的锁对象。
+//   - error: 全局客户端未初始化、参数非法、锁已被占用或 Redis 操作失败时返回错误。
 func AcquireGlobalLock(ctx context.Context, key string, ttl time.Duration) (*Lock, error) {
 	return AcquireLock(ctx, GetClient(), key, ttl)
 }
@@ -81,6 +89,10 @@ func AcquireGlobalLock(ctx context.Context, key string, ttl time.Duration) (*Loc
 // key 锁 key，建议使用业务前缀，例如 lock:order:1。
 // ttl 锁过期时间，必须大于 0。
 // renewInterval 自动续约间隔，必须大于 0 且小于 ttl。
+//
+// 返回值：
+//   - *Lock: 获取成功且已启动后台续约的锁对象。
+//   - error: 参数非法、锁已被占用或 Redis 操作失败时返回错误。
 func AcquireRenewalLock(ctx context.Context, client *redis.Client, key string, ttl time.Duration, renewInterval time.Duration) (*Lock, error) {
 	if ttl <= 0 {
 		return nil, ErrInvalidLockTTL
@@ -103,6 +115,10 @@ func AcquireRenewalLock(ctx context.Context, client *redis.Client, key string, t
 // key 锁 key，建议使用业务前缀，例如 lock:order:1。
 // ttl 锁过期时间，必须大于 0。
 // renewInterval 自动续约间隔，必须大于 0 且小于 ttl。
+//
+// 返回值：
+//   - *Lock: 获取成功且已启动后台续约的锁对象。
+//   - error: 全局客户端未初始化、参数非法、锁已被占用或 Redis 操作失败时返回错误。
 func AcquireGlobalRenewalLock(ctx context.Context, key string, ttl time.Duration, renewInterval time.Duration) (*Lock, error) {
 	return AcquireRenewalLock(ctx, GetClient(), key, ttl, renewInterval)
 }
@@ -146,16 +162,25 @@ func acquireLock(ctx context.Context, client *redis.Client, key string, ttl time
 }
 
 // Key 返回锁 key。
+//
+// 返回值：
+//   - string: 锁 key；锁为空时返回空字符串。
 func (l *Lock) Key() string {
 	return l.key
 }
 
 // Value 返回锁唯一值，主要用于排查问题，不建议业务依赖。
+//
+// 返回值：
+//   - string: 锁唯一值；锁为空时返回空字符串。
 func (l *Lock) Value() string {
 	return l.value
 }
 
 // RenewErr 返回自动续约协程最后一次错误；无续约锁始终返回 nil。
+//
+// 返回值：
+//   - error: 自动续约协程记录的最后一次错误。
 func (l *Lock) RenewErr() error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
@@ -166,6 +191,9 @@ func (l *Lock) RenewErr() error {
 //
 // ctx 控制本次释放锁请求的生命周期。
 // 自动续约锁会先停止续约协程，再执行释放逻辑。
+//
+// 返回值：
+//   - error: 解锁成功或锁已结束返回 nil；Redis 操作失败时返回错误。
 func (l *Lock) Unlock(ctx context.Context) error {
 	if l == nil || l.client == nil {
 		return ErrNilClient

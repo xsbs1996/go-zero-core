@@ -13,41 +13,93 @@ const (
 )
 
 // Base64Encode 进行 base64 编码。
+//
+// 参数：
+//   - data: 待编码字节切片。
+//
+// 返回值：
+//   - string: 标准 base64 编码字符串。
 func Base64Encode(data []byte) string {
 	return base64.StdEncoding.EncodeToString(data)
 }
 
 // Base64Decode 进行 base64 解码。
+//
+// 参数：
+//   - s: 标准 base64 编码字符串。
+//
+// 返回值：
+//   - []byte: 解码后的字节切片。
+//   - error: 输入不是合法 base64 时返回错误。
 func Base64Decode(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
 }
 
 // Base64URLEncode 进行 URL 安全 base64 编码。
+//
+// 参数：
+//   - data: 待编码字节切片。
+//
+// 返回值：
+//   - string: 不带 padding 的 URL 安全 base64 编码字符串。
 func Base64URLEncode(data []byte) string {
 	return base64.RawURLEncoding.EncodeToString(data)
 }
 
 // Base64URLDecode 进行 URL 安全 base64 解码。
+//
+// 参数：
+//   - s: 不带 padding 的 URL 安全 base64 编码字符串。
+//
+// 返回值：
+//   - []byte: 解码后的字节切片。
+//   - error: 输入不是合法 URL 安全 base64 时返回错误。
 func Base64URLDecode(s string) ([]byte, error) {
 	return base64.RawURLEncoding.DecodeString(s)
 }
 
 // Base62Encode 进行 base62 编码。
+//
+// 参数：
+//   - data: 待编码字节切片。
+//
+// 返回值：
+//   - string: base62 编码字符串。
 func Base62Encode(data []byte) string {
 	return encodeBig(data, base62Alphabet)
 }
 
 // Base62Decode 进行 base62 解码。
+//
+// 参数：
+//   - s: base62 编码字符串。
+//
+// 返回值：
+//   - []byte: 解码后的字节切片。
+//   - error: 输入包含非法字符时返回错误。
 func Base62Decode(s string) ([]byte, error) {
 	return decodeBig(s, base62Alphabet)
 }
 
 // Base58Encode 进行 base58 编码。
+//
+// 参数：
+//   - data: 待编码字节切片。
+//
+// 返回值：
+//   - string: base58 编码字符串。
 func Base58Encode(data []byte) string {
 	return encodeBig(data, base58Alphabet)
 }
 
 // Base58Decode 进行 base58 解码。
+//
+// 参数：
+//   - s: base58 编码字符串。
+//
+// 返回值：
+//   - []byte: 解码后的字节切片。
+//   - error: 输入包含非法字符时返回错误。
 func Base58Decode(s string) ([]byte, error) {
 	return decodeBig(s, base58Alphabet)
 }

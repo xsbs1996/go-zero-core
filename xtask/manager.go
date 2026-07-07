@@ -9,7 +9,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-// Job 表示一个定时任务
+// Job 表示一个定时任务。
 type Job struct {
 	Name   string                    // Name 表示任务名称
 	Spec   string                    // Spec 表示 cron 表达式
@@ -17,7 +17,7 @@ type Job struct {
 	Run    func(ctx context.Context) // Run 表示任务执行函数
 }
 
-// Manager 管理定时任务生命周期
+// Manager 管理定时任务生命周期。
 type Manager struct {
 	mu      sync.RWMutex            // mu 保护 entries 的并发读写
 	cron    *cron.Cron              // cron 表示底层调度器
@@ -26,7 +26,13 @@ type Manager struct {
 	cancel  context.CancelFunc      // cancel 用于停止任务上下文
 }
 
-// NewManager 创建定时任务管理器
+// NewManager 创建定时任务管理器。
+//
+// 参数：
+//   - opts: 可选配置，例如 WithSeconds 或 WithLocation。
+//
+// 返回值：
+//   - *Manager: 定时任务管理器实例。
 func NewManager(opts ...Option) *Manager {
 	optionValues := options{}
 	for _, opt := range opts {
@@ -45,7 +51,7 @@ func NewManager(opts ...Option) *Manager {
 	}
 }
 
-// Start 启动定时任务调度器
+// Start 启动定时任务调度器。
 func (m *Manager) Start() {
 	if m == nil {
 		return
@@ -53,7 +59,7 @@ func (m *Manager) Start() {
 	m.cron.Start()
 }
 
-// Stop 停止定时任务调度器并等待运行中的任务退出
+// Stop 停止定时任务调度器并等待运行中的任务退出。
 func (m *Manager) Stop() {
 	if m == nil {
 		return
@@ -64,7 +70,15 @@ func (m *Manager) Stop() {
 	<-ctx.Done()
 }
 
-// AddFunc 注册定时任务函数
+// AddFunc 注册定时任务函数。
+//
+// 参数：
+//   - name: 任务名称；同名任务会覆盖旧任务。
+//   - spec: cron 表达式。
+//   - fn: 任务执行函数。
+//
+// 返回值：
+//   - error: 管理器为空、参数缺失或 cron 表达式非法时返回错误。
 func (m *Manager) AddFunc(name string, spec string, fn func(ctx context.Context)) error {
 	return m.Add(Job{
 		Name: name,
@@ -73,7 +87,15 @@ func (m *Manager) AddFunc(name string, spec string, fn func(ctx context.Context)
 	})
 }
 
-// AddFuncNow 注册定时任务函数并立即执行一次
+// AddFuncNow 注册定时任务函数并立即执行一次。
+//
+// 参数：
+//   - name: 任务名称；同名任务会覆盖旧任务。
+//   - spec: cron 表达式。
+//   - fn: 任务执行函数。
+//
+// 返回值：
+//   - error: 管理器为空、参数缺失或 cron 表达式非法时返回错误。
 func (m *Manager) AddFuncNow(name string, spec string, fn func(ctx context.Context)) error {
 	return m.Add(Job{
 		Name:   name,
@@ -83,7 +105,13 @@ func (m *Manager) AddFuncNow(name string, spec string, fn func(ctx context.Conte
 	})
 }
 
-// Add 注册定时任务
+// Add 注册定时任务。
+//
+// 参数：
+//   - job: 任务配置，包含名称、cron 表达式、是否立即执行和执行函数。
+//
+// 返回值：
+//   - error: 管理器为空、任务参数缺失或 cron 表达式非法时返回错误。
 func (m *Manager) Add(job Job) error {
 	if m == nil {
 		return ErrNilManager
@@ -119,7 +147,13 @@ func (m *Manager) Add(job Job) error {
 	return nil
 }
 
-// Remove 移除定时任务
+// Remove 移除定时任务。
+//
+// 参数：
+//   - name: 任务名称。
+//
+// 返回值：
+//   - bool: true 表示任务存在且已移除，false 表示任务不存在或管理器为空。
 func (m *Manager) Remove(name string) bool {
 	if m == nil {
 		return false
@@ -136,7 +170,10 @@ func (m *Manager) Remove(name string) bool {
 	return ok
 }
 
-// Count 返回已注册任务数量
+// Count 返回已注册任务数量。
+//
+// 返回值：
+//   - int: 当前已注册任务数量；管理器为空时返回 0。
 func (m *Manager) Count() int {
 	if m == nil {
 		return 0
@@ -148,7 +185,10 @@ func (m *Manager) Count() int {
 	return count
 }
 
-// Entries 返回底层 cron 任务快照
+// Entries 返回底层 cron 任务快照。
+//
+// 返回值：
+//   - []cron.Entry: 底层 cron 任务快照；管理器为空时返回 nil。
 func (m *Manager) Entries() []cron.Entry {
 	if m == nil {
 		return nil

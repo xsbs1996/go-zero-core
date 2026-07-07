@@ -8,6 +8,12 @@ import (
 )
 
 // Debug 输出 debug 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
+//   - err: 错误内容。
 func Debug(ctx context.Context, msg string, content any, err any) {
 	if IsDisabled(ctx) {
 		return
@@ -16,6 +22,10 @@ func Debug(ctx context.Context, msg string, content any, err any) {
 }
 
 // DebugContent 输出 debug 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func DebugContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
@@ -24,6 +34,11 @@ func DebugContent(ctx context.Context, content Content) {
 }
 
 // Info 输出 info 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
 func Info(ctx context.Context, msg string, content any) {
 	if IsDisabled(ctx) {
 		return
@@ -32,6 +47,10 @@ func Info(ctx context.Context, msg string, content any) {
 }
 
 // InfoContent 输出 info 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func InfoContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
@@ -40,6 +59,12 @@ func InfoContent(ctx context.Context, content Content) {
 }
 
 // Warn 输出 warn 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
+//   - err: 错误内容。
 func Warn(ctx context.Context, msg string, content any, err any) {
 	if IsDisabled(ctx) {
 		return
@@ -48,6 +73,10 @@ func Warn(ctx context.Context, msg string, content any, err any) {
 }
 
 // WarnContent 输出 warn 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func WarnContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
@@ -56,6 +85,12 @@ func WarnContent(ctx context.Context, content Content) {
 }
 
 // Error 输出 error 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
+//   - err: 错误内容。
 func Error(ctx context.Context, msg string, content any, err any) {
 	if IsDisabled(ctx) {
 		return
@@ -64,6 +99,10 @@ func Error(ctx context.Context, msg string, content any, err any) {
 }
 
 // ErrorContent 输出 error 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func ErrorContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
@@ -72,6 +111,12 @@ func ErrorContent(ctx context.Context, content Content) {
 }
 
 // ErrorStack 输出带堆栈的 error 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
+//   - err: 错误内容。
 func ErrorStack(ctx context.Context, msg string, content any, err any) {
 	if IsDisabled(ctx) {
 		return
@@ -80,6 +125,10 @@ func ErrorStack(ctx context.Context, msg string, content any, err any) {
 }
 
 // ErrorStackContent 输出带堆栈的 error 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func ErrorStackContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return
@@ -94,6 +143,12 @@ func ErrorStackContent(ctx context.Context, content Content) {
 }
 
 // Severe 输出 severe 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - msg: 日志消息。
+//   - content: 日志业务内容。
+//   - err: 错误内容。
 func Severe(ctx context.Context, msg string, content any, err any) {
 	if IsDisabled(ctx) {
 		return
@@ -102,6 +157,10 @@ func Severe(ctx context.Context, msg string, content any, err any) {
 }
 
 // SevereContent 输出 severe 日志。
+//
+// 参数：
+//   - ctx: 日志上下文，可携带 trace 或禁用日志标记。
+//   - content: 结构化日志正文。
 func SevereContent(ctx context.Context, content Content) {
 	if IsDisabled(ctx) {
 		return

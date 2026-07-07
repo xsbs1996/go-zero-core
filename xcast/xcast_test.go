@@ -33,6 +33,9 @@ func TestAnyConversions(t *testing.T) {
 	if got, err := AnyToInt("12"); err != nil || got != 12 {
 		t.Fatalf("AnyToInt() = %d, %v", got, err)
 	}
+	if got, err := AnyToUint64(float64(1001)); err != nil || got != 1001 {
+		t.Fatalf("AnyToUint64() = %d, %v", got, err)
+	}
 	if got, err := AnyToFloat64(true); err != nil || got != 1 {
 		t.Fatalf("AnyToFloat64() = %f, %v", got, err)
 	}
@@ -67,6 +70,20 @@ func TestJSONAndMapConversions(t *testing.T) {
 	}
 	if !reflect.DeepEqual(m, map[string]any{"name": "alice", "age": float64(18)}) {
 		t.Fatalf("StructToMap() = %#v", m)
+	}
+}
+
+// TestInt64ListConversions 验证 int64 列表解析、规范化和序列化。
+func TestInt64ListConversions(t *testing.T) {
+	want := []int64{1, 2, 3}
+	if got := ParseJSONInt64List("[3,1,2,2,0,-1]"); !reflect.DeepEqual(got, want) {
+		t.Fatalf("ParseJSONInt64List() = %#v", got)
+	}
+	if got := ParseInt64List("3,1,2,2,0,-1,bad"); !reflect.DeepEqual(got, want) {
+		t.Fatalf("ParseInt64List() = %#v", got)
+	}
+	if got := JoinInt64List([]int64{3, 1, 2, 2, 0, -1}); got != "[1,2,3]" {
+		t.Fatalf("JoinInt64List() = %q", got)
 	}
 }
 

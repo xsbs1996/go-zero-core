@@ -11,6 +11,14 @@ import (
 )
 
 // Connect 根据配置创建 GORM MySQL 连接。
+//
+// 参数：
+//   - conf: MySQL 连接配置。
+//   - opts: 可选连接配置，例如 WithDSN、WithGormConfig、WithoutPing。
+//
+// 返回值：
+//   - *gorm.DB: 创建成功的 GORM DB。
+//   - error: 配置校验、连接打开、ping 或分表插件注册失败时返回错误。
 func Connect(conf Config, opts ...ConnectOption) (*gorm.DB, error) {
 	if err := conf.Validate(); err != nil {
 		return nil, err
@@ -59,6 +67,13 @@ func Connect(conf Config, opts ...ConnectOption) (*gorm.DB, error) {
 }
 
 // MustConnect 根据配置创建 GORM MySQL 连接，失败时直接 panic。
+//
+// 参数：
+//   - conf: MySQL 连接配置。
+//   - opts: 可选连接配置。
+//
+// 返回值：
+//   - *gorm.DB: 创建成功的 GORM DB。
 func MustConnect(conf Config, opts ...ConnectOption) *gorm.DB {
 	db, err := Connect(conf, opts...)
 	if err != nil {

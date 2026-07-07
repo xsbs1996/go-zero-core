@@ -26,6 +26,12 @@ type AuthConfig struct {
 }
 
 // Auth 创建 go-zero REST 鉴权中间件。
+//
+// 参数：
+//   - conf: 鉴权配置，包含 token 请求头、前缀、跳过路径和校验函数。
+//
+// 返回值：
+//   - rest.Middleware: 可通过 go-zero server.Use 注册的鉴权中间件。
 func Auth(conf AuthConfig) rest.Middleware {
 	conf = conf.WithDefault()
 	skipPaths := toSet(conf.SkipPaths)
@@ -56,6 +62,9 @@ func Auth(conf AuthConfig) rest.Middleware {
 }
 
 // WithDefault 返回补齐默认值后的鉴权配置。
+//
+// 返回值：
+//   - AuthConfig: 已补齐 Header、Prefix 和 Unauthorized 默认处理函数的配置。
 func (c AuthConfig) WithDefault() AuthConfig {
 	if c.Header == "" {
 		c.Header = "Authorization"
@@ -70,6 +79,13 @@ func (c AuthConfig) WithDefault() AuthConfig {
 }
 
 // AuthInfo 从上下文读取认证信息。
+//
+// 参数：
+//   - ctx: 请求上下文。
+//
+// 返回值：
+//   - any: Verify 成功后写入上下文的认证信息。
+//   - bool: true 表示认证信息存在，false 表示不存在。
 func AuthInfo(ctx context.Context) (any, bool) {
 	info := ctx.Value(authContextKey{})
 	return info, info != nil

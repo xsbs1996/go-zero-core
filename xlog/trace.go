@@ -13,6 +13,12 @@ import (
 var errGenerateTraceFailed = errors.New("xlog: generate trace failed")
 
 // ContextWithTrace 复用上下文已有链路追踪信息，不存在时生成新的链路追踪信息。
+//
+// 参数：
+//   - ctx: 父上下文；nil 会回退为 context.Background。
+//
+// 返回值：
+//   - context.Context: 带 trace/span 信息的上下文。
 func ContextWithTrace(ctx context.Context) context.Context {
 	ctx = safeContext(ctx)
 
@@ -25,6 +31,12 @@ func ContextWithTrace(ctx context.Context) context.Context {
 }
 
 // ContextWithForceTrace 强制生成新的链路追踪信息并覆盖上下文。
+//
+// 参数：
+//   - ctx: 父上下文；nil 会回退为 context.Background。
+//
+// 返回值：
+//   - context.Context: 写入新 trace/span 信息的上下文。
 func ContextWithForceTrace(ctx context.Context) context.Context {
 	return contextWithNewTrace(safeContext(ctx))
 }

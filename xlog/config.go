@@ -92,6 +92,9 @@ type logConfAdapter struct {
 }
 
 // WithDefault 返回填充默认值后的日志配置。
+//
+// 返回值：
+//   - Config: 已补齐模式、编码、路径、级别、统计开关、堆栈冷却时间和切割规则的日志配置。
 func (c Config) WithDefault() Config {
 	if c.Mode == "" {
 		c.Mode = ModeConsole
@@ -120,6 +123,10 @@ func (c Config) WithDefault() Config {
 }
 
 // ToLogConf 转换为 go-zero logx.LogConf。
+//
+// 返回值：
+//   - LogConf: go-zero logx 可直接使用的日志配置。
+//   - error: 配置转换失败时返回错误。
 func (c Config) ToLogConf() (LogConf, error) {
 	c = c.WithDefault()
 
@@ -156,6 +163,12 @@ func (c Config) ToLogConf() (LogConf, error) {
 }
 
 // SetupConfig 使用日志配置初始化 logx。
+//
+// 参数：
+//   - c: 本包日志配置。
+//
+// 返回值：
+//   - error: 配置转换或 logx 初始化失败时返回错误。
 func SetupConfig(c Config) error {
 	conf, err := c.ToLogConf()
 	if err != nil {
@@ -166,6 +179,9 @@ func SetupConfig(c Config) error {
 }
 
 // MustSetupConfig 使用日志配置初始化 logx，失败时按 logx 规则退出或抛出异常。
+//
+// 参数：
+//   - c: 本包日志配置。
 func MustSetupConfig(c Config) {
 	conf, err := c.ToLogConf()
 	logx.Must(err)
@@ -173,31 +189,56 @@ func MustSetupConfig(c Config) {
 }
 
 // Setup 初始化 logx 日志配置。
+//
+// 参数：
+//   - c: go-zero logx 原生配置。
+//
+// 返回值：
+//   - error: logx 初始化失败时返回错误。
 func Setup(c LogConf) error {
 	return logx.SetUp(c)
 }
 
 // MustSetup 初始化 logx 日志配置，失败时按 logx 规则退出或抛出异常。
+//
+// 参数：
+//   - c: go-zero logx 原生配置。
 func MustSetup(c LogConf) {
 	logx.MustSetup(c)
 }
 
 // Close 关闭 logx 日志写入器。
+//
+// 返回值：
+//   - error: 关闭失败时返回错误。
 func Close() error {
 	return logx.Close()
 }
 
 // SetWriter 设置日志写入器。
+//
+// 参数：
+//   - w: 日志写入器。
 func SetWriter(w Writer) {
 	logx.SetWriter(w)
 }
 
 // AddWriter 增加日志写入器。
+//
+// 参数：
+//   - w: 日志写入器。
 func AddWriter(w Writer) {
 	logx.AddWriter(w)
 }
 
 // Field 创建日志字段。
+//
+// 参数：
+//   - key: 字段名。
+//   - value: 字段值。
+//
+// 返回值：
+//   - LogField: go-zero logx 字段。
 func Field(key string, value any) LogField {
 	return logx.Field(key, value)
 }

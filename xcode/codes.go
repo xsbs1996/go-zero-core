@@ -75,6 +75,12 @@ type Vars map[string]any
 
 // RegisterCodes 将业务项目自定义错误码合并到统一错误码表。
 //
+// 参数：
+//   - items: 业务错误码到默认文案的映射。错误码必须大于等于 100，文案不能为空。
+//
+// 返回值：
+//   - error: 注册成功返回 nil；错误码处于保留区间、文案为空或重复注册时返回错误。
+//
 // 0-99 为基础库通用错误码保留区间；100 及以上可用于业务错误码。
 // 如果业务错误码与库内已登记错误码冲突，会返回 ErrDuplicateCode。
 func RegisterCodes(items map[int]string) error {
@@ -100,6 +106,13 @@ func RegisterCodes(items map[int]string) error {
 }
 
 // Msg 返回错误码对应的文案，并使用 vars 渲染模板变量。
+//
+// 参数：
+//   - code: 业务错误码。
+//   - vars: 可选模板变量，例如 Vars{"field": "name"} 会替换文案中的 {field}。
+//
+// 返回值：
+//   - string: 渲染后的错误文案；未登记错误码返回默认 unknown error 文案。
 func Msg(code int, vars ...Vars) string {
 	codeMu.RLock()
 	template, ok := codes[code]
@@ -111,6 +124,9 @@ func Msg(code int, vars ...Vars) string {
 }
 
 // CodeMsgMap 返回当前错误码和文案映射的副本。
+//
+// 返回值：
+//   - map[int]string: 当前错误码表副本，修改返回值不会影响包内全局错误码表。
 func CodeMsgMap() map[int]string {
 	codeMu.RLock()
 	defer codeMu.RUnlock()

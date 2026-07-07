@@ -30,6 +30,15 @@ func writer(conf Config, topic string) *kafka.Writer {
 }
 
 // NewProducer 根据 topic 和配置创建 Kafka 生产者。
+//
+// 参数：
+//   - topic: Kafka topic。
+//   - conf: Kafka 连接配置。
+//   - opts: 可选生产者配置，例如 WithWriter、WithoutProducerPing。
+//
+// 返回值：
+//   - *kafka.Writer: Kafka 生产者。
+//   - error: 配置非法、topic 为空或 ping 失败时返回错误。
 func NewProducer(topic string, conf Config, opts ...ProducerOption) (*kafka.Writer, error) {
 	if err := conf.ValidateProducer(); err != nil {
 		return nil, err
@@ -46,6 +55,14 @@ func NewProducer(topic string, conf Config, opts ...ProducerOption) (*kafka.Writ
 }
 
 // MustNewProducer 根据 topic 和配置创建 Kafka 生产者，失败时直接 panic。
+//
+// 参数：
+//   - topic: Kafka topic。
+//   - conf: Kafka 连接配置。
+//   - opts: 可选生产者配置。
+//
+// 返回值：
+//   - *kafka.Writer: Kafka 生产者。
 func MustNewProducer(topic string, conf Config, opts ...ProducerOption) *kafka.Writer {
 	writer, err := NewProducer(topic, conf, opts...)
 	if err != nil {

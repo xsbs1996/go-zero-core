@@ -7,6 +7,14 @@ import (
 )
 
 // Generate 生成 JWT token。
+//
+// 参数：
+//   - conf: JWT 签名、签发者、受众和过期时间配置。
+//   - data: 业务载荷，会写入 Claims.Data。
+//
+// 返回值：
+//   - string: 签名后的 JWT token。
+//   - error: 密钥为空或签名失败时返回错误。
 func Generate(conf Config, data map[string]any) (string, error) {
 	if conf.Secret == "" {
 		return "", ErrMissingSecret

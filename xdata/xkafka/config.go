@@ -37,6 +37,9 @@ type Config struct {
 }
 
 // WithDefault 返回补齐默认值后的配置。
+//
+// 返回值：
+//   - Config: 已补齐超时、批量大小和批量等待时间默认值的 Kafka 配置。
 func (c Config) WithDefault() Config {
 	if c.DialTimeout == 0 {
 		c.DialTimeout = defaultDialTimeout
@@ -63,18 +66,27 @@ func (c Config) WithDefault() Config {
 }
 
 // ProducerBatchTimeout 返回生产者批量发送等待时间。
+//
+// 返回值：
+//   - time.Duration: 生产者批量发送等待时间。
 func (c Config) ProducerBatchTimeout() time.Duration {
 	c = c.WithDefault()
 	return time.Duration(c.BatchTimeout) * time.Millisecond
 }
 
 // ConsumerBatchTimeout 返回批量消费最长等待时间。
+//
+// 返回值：
+//   - time.Duration: 批量消费最长等待时间。
 func (c Config) ConsumerBatchTimeout() time.Duration {
 	c = c.WithDefault()
 	return time.Duration(c.ConsumeBatchTimeout) * time.Millisecond
 }
 
 // ValidateProducer 校验 Kafka 生产者配置。
+//
+// 返回值：
+//   - error: 配置合法返回 nil；broker 为空时返回 ErrMissingBrokers。
 func (c Config) ValidateProducer() error {
 	if len(c.Brokers) == 0 {
 		return ErrMissingBrokers
@@ -83,6 +95,9 @@ func (c Config) ValidateProducer() error {
 }
 
 // ValidateConsumer 校验 Kafka 消费者配置。
+//
+// 返回值：
+//   - error: 配置合法返回 nil；broker 为空时返回 ErrMissingBrokers。
 func (c Config) ValidateConsumer() error {
 	if len(c.Brokers) == 0 {
 		return ErrMissingBrokers

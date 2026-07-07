@@ -30,6 +30,9 @@ type Config struct {
 }
 
 // WithDefault 返回补齐默认值后的配置。
+//
+// 返回值：
+//   - Config: 已补齐连接池大小和超时默认值的 Redis 配置。
 func (c Config) WithDefault() Config {
 	if c.PoolSize == 0 {
 		c.PoolSize = defaultPoolSize
@@ -47,6 +50,9 @@ func (c Config) WithDefault() Config {
 }
 
 // Validate 校验 Redis 连接配置。
+//
+// 返回值：
+//   - error: 配置合法返回 nil；地址为空时返回 ErrMissingAddr。
 func (c Config) Validate() error {
 	if c.Addr == "" {
 		return ErrMissingAddr

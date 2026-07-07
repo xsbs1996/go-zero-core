@@ -16,7 +16,7 @@ const (
 	defaultWriteDeadline   = 10 * time.Second
 )
 
-// Config 表示 WebSocket 会话管理配置
+// Config 表示 WebSocket 会话管理配置。
 type Config struct {
 	MaxConnTotal    int32                      // MaxConnTotal 表示最大在线会话数量
 	ReadBufferSize  int                        // ReadBufferSize 表示 WebSocket 读缓冲区大小
@@ -29,7 +29,10 @@ type Config struct {
 	CheckOrigin     func(r *http.Request) bool // CheckOrigin 表示 WebSocket 来源校验函数
 }
 
-// DefaultConfig 返回默认配置
+// DefaultConfig 返回默认配置。
+//
+// 返回值：
+//   - Config: 已填充默认缓冲区、通道长度、读写超时、消息类型和来源校验函数的配置。
 func DefaultConfig() Config {
 	return Config{
 		MaxConnTotal:    defaultMaxConnTotal,

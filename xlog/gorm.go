@@ -17,6 +17,12 @@ type GormLogger struct {
 }
 
 // NewGormLogger 创建 GORM 日志适配器。
+//
+// 参数：
+//   - config: 可选 GORM logger 配置；不传时使用默认配置。
+//
+// 返回值：
+//   - gormlogger.Interface: 可传给 GORM 使用的日志适配器。
 func NewGormLogger(config ...gormlogger.Config) gormlogger.Interface {
 	conf := gormlogger.Config{
 		SlowThreshold:             200 * time.Millisecond,
@@ -32,6 +38,12 @@ func NewGormLogger(config ...gormlogger.Config) gormlogger.Interface {
 }
 
 // LogMode 设置 GORM 日志级别。
+//
+// 参数：
+//   - level: GORM 日志级别。
+//
+// 返回值：
+//   - gormlogger.Interface: 应用了新日志级别的 logger 副本。
 func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 	newLogger := *l
 	newLogger.Config.LogLevel = level
@@ -39,6 +51,11 @@ func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 }
 
 // Info 输出 GORM info 日志。
+//
+// 参数：
+//   - ctx: 日志上下文。
+//   - msg: 日志消息模板。
+//   - data: 模板参数。
 func (l *GormLogger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if IsDisabled(ctx) {
 		return
@@ -49,6 +66,11 @@ func (l *GormLogger) Info(ctx context.Context, msg string, data ...interface{}) 
 }
 
 // Warn 输出 GORM warn 日志。
+//
+// 参数：
+//   - ctx: 日志上下文。
+//   - msg: 日志消息模板。
+//   - data: 模板参数。
 func (l *GormLogger) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if IsDisabled(ctx) {
 		return
@@ -59,6 +81,11 @@ func (l *GormLogger) Warn(ctx context.Context, msg string, data ...interface{}) 
 }
 
 // Error 输出 GORM error 日志。
+//
+// 参数：
+//   - ctx: 日志上下文。
+//   - msg: 日志消息模板。
+//   - data: 模板参数。
 func (l *GormLogger) Error(ctx context.Context, msg string, data ...interface{}) {
 	if IsDisabled(ctx) {
 		return
@@ -69,6 +96,12 @@ func (l *GormLogger) Error(ctx context.Context, msg string, data ...interface{})
 }
 
 // Trace 输出 GORM SQL 日志。
+//
+// 参数：
+//   - ctx: 日志上下文。
+//   - begin: SQL 开始执行时间。
+//   - fc: 返回 SQL 和影响行数的延迟函数。
+//   - err: SQL 执行错误。
 func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
 	if IsDisabled(ctx) {
 		return
@@ -92,6 +125,15 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 }
 
 // ParamsFilter 过滤 GORM SQL 参数。
+//
+// 参数：
+//   - ctx: 日志上下文。
+//   - sql: SQL 字符串。
+//   - params: SQL 参数。
+//
+// 返回值：
+//   - string: SQL 字符串。
+//   - []interface{}: SQL 参数；启用 ParameterizedQueries 时返回 nil。
 func (l *GormLogger) ParamsFilter(ctx context.Context, sql string, params ...interface{}) (string, []interface{}) {
 	if l.Config.ParameterizedQueries {
 		return sql, nil

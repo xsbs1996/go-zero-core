@@ -30,6 +30,12 @@ type rateLimitItem struct {
 }
 
 // RateLimit 创建 go-zero REST 限流中间件。
+//
+// 参数：
+//   - conf: 限流配置，包含时间窗口、请求上限、限流键函数和跳过路径。
+//
+// 返回值：
+//   - rest.Middleware: 可通过 go-zero server.Use 注册的限流中间件。
 func RateLimit(conf RateLimitConfig) rest.Middleware {
 	conf = conf.WithDefault()
 	store := make(map[string]rateLimitItem)
@@ -68,6 +74,9 @@ func RateLimit(conf RateLimitConfig) rest.Middleware {
 }
 
 // WithDefault 返回补齐默认值后的限流配置。
+//
+// 返回值：
+//   - RateLimitConfig: 已补齐默认限制次数、时间窗口、限流响应函数和限流键函数的配置。
 func (c RateLimitConfig) WithDefault() RateLimitConfig {
 	if c.Limit <= 0 {
 		c.Limit = 100

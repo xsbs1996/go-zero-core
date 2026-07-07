@@ -13,6 +13,14 @@ type Content struct {
 }
 
 // Body 将日志正文包装为统一 JSON 结构。
+//
+// 参数：
+//   - msg: 日志消息。
+//   - content: 日志业务内容，error 或 fmt.Stringer 会被转换为字符串。
+//   - err: 错误内容，error 或 fmt.Stringer 会被转换为字符串。
+//
+// 返回值：
+//   - string: JSON 字符串；序列化失败时返回空结构 JSON。
 func Body(msg string, content any, err any) string {
 	data, marshalErr := json.Marshal(Content{
 		Msg:     msg,
@@ -27,6 +35,12 @@ func Body(msg string, content any, err any) string {
 }
 
 // BodyContent 将日志正文结构包装为 JSON 字符串。
+//
+// 参数：
+//   - content: 日志正文结构。
+//
+// 返回值：
+//   - string: JSON 字符串。
 func BodyContent(content Content) string {
 	return Body(content.Msg, content.Content, content.Error)
 }

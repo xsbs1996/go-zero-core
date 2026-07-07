@@ -34,6 +34,14 @@ type Claims[T any] struct {
 
 // Generate 生成签名票据。
 //
+// 参数：
+//   - conf: 票据签名配置，必须包含 Secret。
+//   - payload: 业务载荷，会写入 Claims.Payload。
+//
+// 返回值：
+//   - string: 签名后的票据字符串。
+//   - error: 密钥为空或 JSON 序列化失败时返回错误。
+//
 // 票据格式为 base64url(JSON claims) + "." + base64url(HMAC-SHA256 signature)。
 // Generate 只负责生成随机 Nonce、写入签发/过期时间并完成签名，不负责服务端存储。
 func Generate[T any](conf Config, payload T) (string, error) {
@@ -63,6 +71,14 @@ func Generate[T any](conf Config, payload T) (string, error) {
 }
 
 // Parse 解析票据并校验签名，不校验过期时间。
+//
+// 参数：
+//   - conf: 票据签名配置，必须包含 Secret。
+//   - value: 待解析的票据字符串。
+//
+// 返回值：
+//   - *Claims[T]: 解析成功后的票据载荷。
+//   - error: 密钥为空、票据格式非法、签名非法或 JSON 解码失败时返回错误。
 //
 // Parse 适合需要读取过期票据内容的场景；如果需要同时校验过期时间，应使用 Verify。
 func Parse[T any](conf Config, value string) (*Claims[T], error) {
@@ -94,6 +110,14 @@ func Parse[T any](conf Config, value string) (*Claims[T], error) {
 }
 
 // Verify 解析票据、校验签名并校验过期时间。
+//
+// 参数：
+//   - conf: 票据签名配置，必须包含 Secret。
+//   - value: 待校验的票据字符串。
+//
+// 返回值：
+//   - *Claims[T]: 校验成功后的票据载荷。
+//   - error: 解析失败、签名非法或票据过期时返回错误。
 //
 // Verify 不处理服务端存储、防重放或删除逻辑。业务层可在 Verify 成功后根据
 // Claims.Nonce 或原始票据字符串自行完成 Redis/DB 校验和删除。

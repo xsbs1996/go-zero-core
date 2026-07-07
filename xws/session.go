@@ -12,7 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Session 表示一个 WebSocket 连接会话
+// Session 表示一个 WebSocket 连接会话。
 type Session struct {
 	ctx    context.Context    // ctx 控制会话读写协程退出
 	cancel context.CancelFunc // cancel 主动取消会话上下文
@@ -59,7 +59,10 @@ func createSession(conn *websocket.Conn, code string, config Config, onClose fun
 	return session
 }
 
-// Code 返回会话连接编码
+// Code 返回会话连接编码。
+//
+// 返回值：
+//   - string: 会话创建时传入的连接编码；nil 会话返回空字符串。
 func (s *Session) Code() string {
 	if s == nil {
 		return ""
@@ -67,7 +70,13 @@ func (s *Session) Code() string {
 	return s.code
 }
 
-// Close 关闭会话
+// Close 关闭会话。
+//
+// 参数：无。
+// 返回值：无。
+//
+// Close 会停止读写协程、关闭当前连接，并触发 manager 的会话移除回调。
+// 该方法可重复调用，只有第一次调用会执行关闭逻辑。
 func (s *Session) Close() {
 	if s == nil {
 		return
@@ -186,7 +195,13 @@ func (s *Session) writeLoop() {
 	}
 }
 
-// Write 写入下行消息
+// Write 写入下行消息。
+//
+// 参数：
+//   - msg: 需要发送给客户端的二进制消息。
+//
+// 返回值：
+//   - bool: true 表示消息已写入发送通道，false 表示会话已关闭或发送通道不可用。
 func (s *Session) Write(msg []byte) bool {
 	if s == nil || !s.IsAlive() {
 		return false
@@ -212,12 +227,18 @@ func (s *Session) Write(msg []byte) bool {
 	}
 }
 
-// IsAlive 判断会话是否存活
+// IsAlive 判断会话是否存活。
+//
+// 返回值：
+//   - bool: true 表示会话仍处于运行状态，false 表示会话为空或已关闭。
 func (s *Session) IsAlive() bool {
 	return s != nil && s.state.Load() == 1
 }
 
-// Read 返回上行消息读取通道
+// Read 返回上行消息读取通道。
+//
+// 返回值：
+//   - <-chan []byte: 客户端上行消息通道；nil 会话返回 nil。
 func (s *Session) Read() <-chan []byte {
 	if s == nil {
 		return nil

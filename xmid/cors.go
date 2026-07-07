@@ -20,6 +20,12 @@ type CorsConfig struct {
 }
 
 // Cors 创建 go-zero REST 跨域中间件。
+//
+// 参数：
+//   - conf: CORS 配置，包含允许来源、方法、请求头、暴露头和预检缓存时间。
+//
+// 返回值：
+//   - rest.Middleware: 可通过 go-zero server.Use 注册的 CORS 中间件。
 func Cors(conf CorsConfig) rest.Middleware {
 	conf = conf.WithDefault()
 
@@ -41,6 +47,9 @@ func Cors(conf CorsConfig) rest.Middleware {
 }
 
 // WithDefault 返回补齐默认值后的跨域配置。
+//
+// 返回值：
+//   - CorsConfig: 已补齐默认来源、方法和请求头的配置。
 func (c CorsConfig) WithDefault() CorsConfig {
 	if len(c.AllowedOrigins) == 0 {
 		c.AllowedOrigins = []string{"*"}

@@ -2,7 +2,6 @@ package xrand
 
 import (
 	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"math/big"
 )
@@ -13,26 +12,15 @@ const (
 	MixedLetters  = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" // MixedLetters 数字字母字符集。
 )
 
-// Bytes 生成指定长度随机字节。
-func Bytes(length int) ([]byte, error) {
-	if length < 0 {
-		return nil, errors.New("xrand: invalid length")
-	}
-	buf := make([]byte, length)
-	_, err := rand.Read(buf)
-	return buf, err
-}
-
-// Hex 生成指定字节长度的十六进制随机字符串。
-func Hex(length int) (string, error) {
-	buf, err := Bytes(length)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(buf), nil
-}
-
-// String 使用指定字符集生成随机字符串。
+// String 使用指定字符集生成加密安全随机字符串。
+//
+// 参数：
+//   - length: 随机字符串长度，必须大于等于 0。
+//   - letters: 随机字符集，不能为空。
+//
+// 返回值：
+//   - string: 随机字符串。
+//   - error: length 非法、字符集为空或随机源读取失败时返回错误。
 func String(length int, letters string) (string, error) {
 	if length < 0 {
 		return "", errors.New("xrand: invalid length")
@@ -54,16 +42,37 @@ func String(length int, letters string) (string, error) {
 }
 
 // Number 生成数字随机字符串。
+//
+// 参数：
+//   - length: 随机字符串长度。
+//
+// 返回值：
+//   - string: 仅包含数字的随机字符串。
+//   - error: length 非法或随机源读取失败时返回错误。
 func Number(length int) (string, error) {
 	return String(length, NumberLetters)
 }
 
 // Alpha 生成字母随机字符串。
+//
+// 参数：
+//   - length: 随机字符串长度。
+//
+// 返回值：
+//   - string: 仅包含大小写字母的随机字符串。
+//   - error: length 非法或随机源读取失败时返回错误。
 func Alpha(length int) (string, error) {
 	return String(length, AlphaLetters)
 }
 
 // Mixed 生成数字字母随机字符串。
+//
+// 参数：
+//   - length: 随机字符串长度。
+//
+// 返回值：
+//   - string: 包含数字和大小写字母的随机字符串。
+//   - error: length 非法或随机源读取失败时返回错误。
 func Mixed(length int) (string, error) {
 	return String(length, MixedLetters)
 }

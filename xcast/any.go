@@ -116,6 +116,44 @@ func AnyToInt64(v any) (int64, error) {
 	}
 }
 
+// AnyToUint64 将常见标量类型转换为 uint64。
+func AnyToUint64(v any) (uint64, error) {
+	switch value := v.(type) {
+	case int:
+		return uint64(value), nil
+	case int8:
+		return uint64(value), nil
+	case int16:
+		return uint64(value), nil
+	case int32:
+		return uint64(value), nil
+	case int64:
+		return uint64(value), nil
+	case uint:
+		return uint64(value), nil
+	case uint8:
+		return uint64(value), nil
+	case uint16:
+		return uint64(value), nil
+	case uint32:
+		return uint64(value), nil
+	case uint64:
+		return value, nil
+	case float32:
+		return uint64(value), nil
+	case float64:
+		return uint64(value), nil
+	case bool:
+		return uint64(BoolToInt(value)), nil
+	case string:
+		return StringToUint64(value)
+	case []byte:
+		return StringToUint64(string(value))
+	default:
+		return 0, fmt.Errorf("unsupported type %T for uint64 conversion", v)
+	}
+}
+
 // AnyToFloat64 将常见标量类型转换为 float64。
 func AnyToFloat64(v any) (float64, error) {
 	switch value := v.(type) {
@@ -213,6 +251,15 @@ func AnyToIntOrDefault(v any, defaultValue int) int {
 // AnyToInt64OrDefault 将 v 转换为 int64，转换失败时返回默认值。
 func AnyToInt64OrDefault(v any, defaultValue int64) int64 {
 	value, err := AnyToInt64(v)
+	if err != nil {
+		return defaultValue
+	}
+	return value
+}
+
+// AnyToUint64OrDefault 将 v 转换为 uint64，转换失败时返回默认值。
+func AnyToUint64OrDefault(v any, defaultValue uint64) uint64 {
+	value, err := AnyToUint64(v)
 	if err != nil {
 		return defaultValue
 	}

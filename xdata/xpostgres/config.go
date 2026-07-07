@@ -48,6 +48,9 @@ type Config struct {
 }
 
 // WithDefault 返回补齐默认值后的配置。
+//
+// 返回值：
+//   - Config: 已补齐 SSL 模式和超时默认值的 PostgreSQL 配置。
 func (c Config) WithDefault() Config {
 	if c.SSLMode == "" {
 		c.SSLMode = defaultSSLMode
@@ -65,6 +68,9 @@ func (c Config) WithDefault() Config {
 }
 
 // Validate 校验 PostgreSQL 连接配置。
+//
+// 返回值：
+//   - error: 配置合法返回 nil；缺少地址、用户名、数据库名或分表配置非法时返回错误。
 func (c Config) Validate() error {
 	if c.Host == "" {
 		return ErrMissingHost
@@ -82,6 +88,9 @@ func (c Config) Validate() error {
 }
 
 // DSN 根据配置生成 PostgreSQL 连接字符串。
+//
+// 返回值：
+//   - string: PostgreSQL DSN 连接字符串。
 func (c Config) DSN() string {
 	c = c.WithDefault()
 
@@ -104,6 +113,9 @@ func (c Config) DSN() string {
 }
 
 // GormLogLevel 将字符串日志级别转换为 GORM 日志级别。
+//
+// 返回值：
+//   - logger.LogLevel: GORM 日志级别；未识别配置默认返回 logger.Warn。
 func (c Config) GormLogLevel() logger.LogLevel {
 	switch c.LogLevel {
 	case "silent", "Silent", "SILENT":
@@ -120,6 +132,9 @@ func (c Config) GormLogLevel() logger.LogLevel {
 }
 
 // GormLogConfig 将配置转换为 GORM 日志配置。
+//
+// 返回值：
+//   - logger.Config: GORM logger 配置。
 func (c Config) GormLogConfig() logger.Config {
 	return logger.Config{
 		SlowThreshold:             200 * time.Millisecond,

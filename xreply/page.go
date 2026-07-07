@@ -15,6 +15,13 @@ type page[T any] struct {
 }
 
 // SuccessPage 输出分页成功 JSON 响应。
+//
+// 参数：
+//   - w: HTTP 响应写入器。
+//   - list: 当前页数据列表。
+//   - total: 总数据量。
+//   - pageNo: 当前页码。
+//   - pageSize: 每页数量。
 func SuccessPage[T any](w http.ResponseWriter, list []T, total int64, pageNo int, pageSize int) {
 	httpx.OkJson(w, successPageResult(list, total, pageNo, pageSize))
 }
