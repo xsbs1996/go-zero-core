@@ -20,7 +20,7 @@
 
 | go-zero-core | Go | go-zero | 说明 |
 | --- | --- | --- | --- |
-| 开发中 | 1.25+ | 1.10.1 | 未发布。当前工作区新增 `xmath`、顶层 `xrand`，随机工具从 `xcrypto/xrand` 迁移到顶层 `xrand` 并删除旧路径；补充 `xcast` 列表/`uint64` 转换、`xws` 用户 ID 会话便捷方法等能力。 |
+| v1.0.3 | 1.25+ | 1.10.1 | 当前版本。新增 `xmath`、顶层 `xrand`，随机工具从 `xcrypto/xrand` 迁移到顶层 `xrand` 并删除旧路径；补充 `xcast` 列表/`uint64` 转换、`xws` 用户 ID 会话便捷方法等能力。 |
 | v1.0.2 | 1.25+ | 1.10.1 | 新增 `xauth/xjwt`、`xauth/xticket`，移除 `xcrypto/xjwt`；补充各模块单元测试；`xcode` 只内置 0-99 通用错误码，100 及以上由业务注册。 |
 | v1.0.1 | 1.25+ | 1.10.1 | 新增 `xcode` 统一错误码、`xpacket` 二进制封包；`xreply` 只保留统一响应能力。 |
 | v1.0.0 | 1.25+ | 1.10.1 | 初始发布版本，包含数据源、日志、中间件、响应、WebSocket、任务、加密和类型转换能力。 |
@@ -28,7 +28,7 @@
 ## 安装
 
 ```bash
-go get github.com/xsbs1996/go-zero-core@v1.0.2
+go get github.com/xsbs1996/go-zero-core@v1.0.3
 ```
 
 如果该仓库作为内部模块维护，请将业务项目中的 import path 替换为实际仓库地址。
